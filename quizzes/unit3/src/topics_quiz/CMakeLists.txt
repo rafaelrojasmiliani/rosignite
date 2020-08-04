@@ -7,10 +7,10 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
 )
 
-add_message_files(
-  FILES
-  Age.msg
-)
+#add_message_files(
+#  FILES
+#  Age.msg
+#)
 
 generate_messages(
   DEPENDENCIES
