@@ -14,6 +14,7 @@ set -o nounset
 function main(){
     if [ "$1" = "clean" ]; then
         find . -type d -name "devel" -exec rm -rf "{}" \;
+        find . -type d -name "build" -exec rm -rf "{}" \;
         exit
     fi
 
