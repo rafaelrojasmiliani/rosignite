@@ -12,6 +12,11 @@ set -o nounset
 
 
 function main(){
+    if [ "$1" = "clean" ]; then
+        find . -type d -name "devel" -exec rm -rf "{}" \;
+        exit
+    if
+
     if [ ! -d "quizzes/$1/devel" ]; then
         cd "quizzes/$1/src" && catkin_init_workspace && cd .. && catkin_make
     fi
