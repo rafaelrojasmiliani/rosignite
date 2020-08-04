@@ -13,7 +13,7 @@ set -o nounset
 
 function main(){
     if [ ! -d "quizzes/$1/devel" ]; then
-        cd "$1/src" && catkin_init_workspace && cd .. && catkin_make
+        cd "quizzes/$1/src" && catkin_init_workspace && cd .. && catkin_make
     fi
     source "quizzes/$1/devel/setup.bash"
     roslaunch "$2" "$3"
