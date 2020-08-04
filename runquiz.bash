@@ -18,7 +18,7 @@ function main(){
     fi
 
     if [ ! -d "quizzes/$1/devel" ]; then
-        cd "quizzes/$1/src" && catkin_make
+        cd "quizzes/$1" && catkin_make
     fi
     source "quizzes/$1/devel/setup.bash"
     roslaunch "$2" "$3"
