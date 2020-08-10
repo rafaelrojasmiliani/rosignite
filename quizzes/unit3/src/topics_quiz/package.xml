@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>topic_ex</name>
+  <name>topics_quiz</name>
   <version>0.0.0</version>
-  <description>The topic_ex package</description>
+  <description>Quiz of unit3 for rosignite accadepy</description>
 
 
-  <maintainer email="user@todo.todo">user</maintainer>
+  <maintainer email="rafaerojasmiliani@gmail.com">Rafael A. Rojas</maintainer>
 
-  <license>TODO</license>
+  <license>MIT</license>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>rospy</build_depend>
