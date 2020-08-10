@@ -13,8 +13,8 @@ class cServiceServer(object):
     def service(self, *_data):
         request = _data[0]
         time_size_scale = 5
-        repetitions = request.repetitions
-        side = request.side*time_size_scale
+        repetitions = request.repetitions.data
+        side = request.side.data*time_size_scale
 
         for _ in range(repetitions):
             for _ in range(4):
