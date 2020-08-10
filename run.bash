@@ -45,7 +45,7 @@ Usage: $0 [quizzes, examples] [unit] [package] [roslaunch]
 EOF
 }
 
-if [ "$#" -le 4 ]
+if [ "$#" -lt 4 ]
 then
     print_help
     exit 1
