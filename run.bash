@@ -25,6 +25,7 @@ function main(){
     else
         build_package $1 $2
         echo "Now you can run roslaunch $3 $4"
+        source $1/$2/devel/setup.bash
     fi
 }
 
