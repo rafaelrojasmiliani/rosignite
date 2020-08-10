@@ -1,4 +1,0 @@
-<launch>
-  <node name="exersice_4_2_server" pkg="unit_4_services" type="bb8_move_in_circle_service_server.py" output="screen"/>
-  <node name="exersice_4_2_client" pkg="unit_4_services" type="bb8_move_in_circle_service_client.py" output="screen"/>
-</launch>
