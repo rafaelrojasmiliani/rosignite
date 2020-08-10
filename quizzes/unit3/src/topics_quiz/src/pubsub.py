@@ -11,14 +11,26 @@ class cPubSub(object):
         self.pub_ = rospy.Publisher('cmd_vel', Twist, queue_size=10)
 
     def control_action(self, *data):
-        msg = data[0]
-        rospy.loginfo('len of the array is {:d}'.format(len(msg.ranges)))
+        feed_back_msg = data[0]
+
+        front_lecture = np.min(feed_back_msg.ranges[240:480])
+        left_lecture = np.min(feed_back_msg.ranges[480:])
+        right_lecture = np.min(feed_back_msg.ranges[:240])
+
         msg = Twist()
-        v = np.random.rand(3) 
-        w = np.random.rand(3) 
         for coord, vi, wi in zip('xyz', v, w):
             setattr(msg.linear, coord, 0.0)
             setattr(msg.angular, coord, 0.0)
+
+        if front_lecture > 1.0:
+            msg.linear.x = 1.0
+        elif front_lecture <= 1.0:
+            msg.angular.z = 1.0
+        elif right_lecture < 1.0:
+            msg.angular.z = 1.0
+        elif left_lecture < 1.0:
+            msg.angular.z = 1.0
+
         self.pub_.publish(msg)
 
 
