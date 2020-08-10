@@ -22,7 +22,7 @@ class cServiceServer(object):
         for _ in range(repetitions):
             for _ in range(4):
                 self.move_linear(side)
-                self.move_angular(side)
+                self.move_angular()
 
         my_response = BB8CustomServiceMessageResponse()
         my_response.success = True
