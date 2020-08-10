@@ -39,7 +39,7 @@ class cServiceServer(object):
 
     def move_angular(self, _vel=5.0):
         command = Twist()
-        command.angular.z = _vel
+        command.linear.y = _vel
         displacement = 0.0
         while displacement < np.pi/2.0:
             self.pub_.publish(command)
