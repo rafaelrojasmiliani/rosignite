@@ -20,10 +20,23 @@ function main(){
         exit 1
     fi
 
+    if is_built; then
+        roslaunch "$2" "$3"
+    else
+        build_package
+        echo "Now you can run roslaunch $2 $3"
+    fi
+}
+
+
+function build_package(){
     if [ ! -d "quizzes/$1/devel" ]; then
         cd "quizzes/$1" && catkin_make
     fi
-    roslaunch "$2" "$3"
+}
+
+function is_built(){
+    return [ ! -d "quizzes/$1/devel" ] && [ ! -d "quizzes/$1/build"]
 }
 
 function print_help(){
