@@ -16,7 +16,7 @@ class cNode(object):
     def main(self):
         req = ExecTrajRequest()
         req.file = self.trj_file_
-        result = traj_by_name_service(req)
+        result = self.service_(req)
 
         
 
