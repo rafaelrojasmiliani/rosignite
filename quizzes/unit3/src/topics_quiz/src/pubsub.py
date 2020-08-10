@@ -18,7 +18,7 @@ class cPubSub(object):
         right_lecture = np.min(feed_back_msg.ranges[:240])
 
         msg = Twist()
-        for coord, vi, wi in zip('xyz', v, w):
+        for coord in 'xyz':
             setattr(msg.linear, coord, 0.0)
             setattr(msg.angular, coord, 0.0)
 
