@@ -21,8 +21,8 @@ class cServiceServer(object):
             for _ in range(4):
                 self.move_linear(1)
                 rate_lin.sleep()
-                self.move_angular(0.5)
-                rate.sleep()
+#                self.move_angular(0.5)
+#                rate.sleep()
             self.move_linear(0.0)
             self.move_angular(0.0)
             rate.sleep()
