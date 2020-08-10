@@ -19,7 +19,7 @@ class cServiceServer(object):
 
         for _ in range(repetitions):
             for _ in range(4):
-                self.move_linear(1)
+                self.move_linear(5)
                 rate_lin.sleep()
 #                self.move_angular(0.5)
 #                rate.sleep()
