@@ -1,0 +1,4 @@
+<launch>
+<node name="client" pkg="services_quiz" type="bb8_move_custom_service_client.py"/>
+</launch>
+
