@@ -11,11 +11,13 @@ set -o errexit
 set -o nounset
 
 
+
 function main(){
     if [ "$1" = "clean" ]; then
         find . -type d -name "devel" -exec rm -rf "{}" \;
         find . -type d -name "build" -exec rm -rf "{}" \;
-        exit
+        find . -type d -name ".catkin_workspace" -exec rm -rf "{}" \;
+        exit 1
     fi
 
     if [ ! -d "quizzes/$1/devel" ]; then
@@ -24,5 +26,19 @@ function main(){
     source "quizzes/$1/devel/setup.bash"
     roslaunch "$2" "$3"
 }
+
+function print_help(){
+    
+    cat <<EOF
+Usage: $0 [options]
+    $0 unit package roslaunchfile
+EOF
+}
+
+if [ "$#" -eq 0 ]
+then
+    print_help
+    exit 1
+fi
 
 main "$@"
