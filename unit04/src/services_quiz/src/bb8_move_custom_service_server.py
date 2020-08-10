@@ -29,7 +29,7 @@ class cServiceServer(object):
 
     def move_linear(self, _vx):
         command = Twist()
-        command.linear.x = vx
+        command.linear.x = _vx
         self.pub_.publish(command)
 
     def move_angular(self, _wz):
