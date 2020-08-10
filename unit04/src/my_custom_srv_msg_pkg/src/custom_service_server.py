@@ -9,6 +9,7 @@ class cServiceServer(object):
         self.srv_ = rospy.Service('/my_service', MyCustomServiceMessage , self.service) 
 
     def service(self, *data):
+        request = data[0]
         my_response = MyCustomServiceMessageResponse()
         if request.duration > 5.0:
             my_response.success = True
