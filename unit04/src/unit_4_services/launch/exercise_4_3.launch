@@ -1,4 +1,4 @@
 <launch>
-  <node name="example_4_3_server" pkg="unit_4_services" type="call_bb8_move_custom_service_server.py" output="screen"/>
-  <node name="example_4_3_client" pkg="unit_4_services" type="call_bb8_move_custom_service_client.py" output="screen"/>
+  <node name="example_4_3_server" pkg="unit_4_services" type="bb8_move_custom_service_server.py" output="screen"/>
+  <node name="example_4_3_client" pkg="unit_4_services" type="bb8_move_custom_service_client.py" output="screen"/>
 </launch>
