@@ -11,7 +11,7 @@ class cServiceServer(object):
 
     def service(self, *_data):
         request = _data[0]
-        time_size_scale = 5
+        time_size_scale = 10
         repetitions = request.repetitions
         side = request.side*time_size_scale
         rate = rospy.Rate(side)
@@ -22,6 +22,9 @@ class cServiceServer(object):
                 rate.sleep()
                 self.move_angular(0.5)
                 rate.sleep()
+            self.move_linear(0.0)
+            self.move_angular(0.0)
+            rate.sleep()
 
         my_response = BB8CustomServiceMessageResponse()
         my_response.success = True
