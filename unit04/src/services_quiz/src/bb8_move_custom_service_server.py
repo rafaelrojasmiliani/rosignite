@@ -19,9 +19,9 @@ class cServiceServer(object):
         for _ in range(repetitions):
             for _ in range(4):
                 self.move_linear(0.5)
-                self.rate_(side)
+                self.rate_.sleep(side)
                 self.move_angular(0.5)
-                self.rate_(side)
+                self.rate_.sleep(side)
 
         my_response = BB8CustomServiceMessageResponse()
         my_response.success = True
