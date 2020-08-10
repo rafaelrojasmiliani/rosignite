@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(topic_ex)
+project(topics_quiz)
 
 
 find_package(catkin REQUIRED COMPONENTS
