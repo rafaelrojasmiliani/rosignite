@@ -8,7 +8,7 @@ import numpy as np
 class cPubSub(object):
     def __init__(self):
         self.sub_ = rospy.Subscriber("/kobuki/laser/scan", LaserScan, self.control_action)
-        pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
+        self.pub_ = rospy.Publisher('cmd_vel', Twist, queue_size=10)
 
     def control_action(self, *data):
         msg = data[0]
@@ -19,7 +19,7 @@ class cPubSub(object):
         for coord, vi, wi in zip('xyz', v, w):
             setattr(msg.linear, coord, vi)
             setattr(msg.angular, coord, wi)
-        self.pub.publish(msg)
+        self.pub_.publish(msg)
 
 
 def main():
