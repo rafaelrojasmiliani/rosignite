@@ -16,8 +16,8 @@ class cSrvServer(object):
 
     def start_service(self, *args):
         command = self.cmd_buff_
-        command.x = 1
-        command.z = 1
+        command.linear.x = 1
+        command.angular.z = 1
         self.pub_.publish(command)
         result = EmptyResponse()
         return result
