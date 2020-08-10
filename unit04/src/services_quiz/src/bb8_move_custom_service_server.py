@@ -6,7 +6,6 @@ from geometry_msgs.msg import Twist
 class cServiceServer(object):
     def __init__(self):
         self.srv_ = rospy.Service('/move_bb8_in_square_custom', BB8CustomServiceMessage , self.service) 
-        self.rate_ = rospy.Rate(1)
         self.pub_ = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
 
 
@@ -15,14 +14,14 @@ class cServiceServer(object):
         time_size_scale = 5
         repetitions = request.repetitions
         side = request.side*time_size_scale
-        rospy.loginfo(side)
+        rate = rospy.Rate(side)
 
         for _ in range(repetitions):
             for _ in range(4):
                 self.move_linear(0.5)
-                self.rate_.sleep(side)
+                rate.sleep()
                 self.move_angular(0.5)
-                self.rate_.sleep(side)
+                rate.sleep()
 
         my_response = BB8CustomServiceMessageResponse()
         my_response.success = True
