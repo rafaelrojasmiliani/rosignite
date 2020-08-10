@@ -35,10 +35,9 @@ class cServiceServer(object):
             self.pub_.publish(command)
             displacement += _vel*self.time_step_
             rospy.loginfo('move linear {:.4f}'.format(displacement))
+            self.rate_.sleep()
 
-        self.rate_.sleep()
-
-    def move_angular(self, _vel=1.0):
+    def move_angular(self, _vel=5.0):
         command = Twist()
         command.angular.z = _vel
         displacement = 0.0
@@ -46,6 +45,7 @@ class cServiceServer(object):
             self.pub_.publish(command)
             displacement += _vel*self.time_step_
             rospy.loginfo('move angular {:.4f}'.format(displacement))
+            self.rate_.sleep()
 
 
 def main():
