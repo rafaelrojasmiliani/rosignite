@@ -19,7 +19,7 @@ class cPubSub(object):
         for coord, vi, wi in zip('xyz', v, w):
             setattr(msg.linear, coord, vi)
             setattr(msg.angular, coord, wi)
-        pub.publish(msg)
+        self.pub.publish(msg)
 
 
 def main():
