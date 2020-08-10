@@ -43,9 +43,9 @@ class cServiceServer(object):
         displacement = 0.0
         while displacement < np.pi/2.0:
             self.pub_.publish(command)
-            displacement += _vel*self.time_step_
             rospy.loginfo('move angular {:.4f}'.format(displacement))
             self.rate_.sleep()
+            displacement += _vel*self.time_step_
 
 
 def main():
