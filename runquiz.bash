@@ -34,7 +34,8 @@ function build_package(){
 }
 
 function is_built(){
-     [[ -d "quizzes/$1/devel" ]] && [[ -d "quizzes/$1/build"]]
+     [ -d "quizzes/$1/devel" ] && [ -d "quizzes/$1/build"]
+     return $?
 }
 
 function print_help(){
