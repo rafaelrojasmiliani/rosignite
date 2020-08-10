@@ -1,10 +1,10 @@
 #!/bin/bash
-# Bash script which launches the rosignite quizzes
+# Bash script which launches the rosignite $1
 # Arguments
 # ---------
-# $1 = unit
-# $2 = package
-# $3 = launch file
+# $2 = unit
+# $3 = package
+# $4 = launch file
 #let script exit if a command fails
 set -o errexit 
 #let script exit if an unsed variable is used
@@ -13,40 +13,39 @@ set -o nounset
 
 
 function main(){
-    if [ "$1" = "clean" ]; then
+    if [ "$2" = "clean" ]; then
         find . -type d -name "devel" -exec rm -rf "{}" \;
         find . -type d -name "build" -exec rm -rf "{}" \;
         find . -type d -name ".catkin_workspace" -exec rm -rf "{}" \;
         exit 1
     fi
 
-    if is_built $1; then
-        roslaunch "$2" "$3"
+    if is_built $2; then
+        roslaunch "$3" "$4"
     else
-        build_package $1
-        echo "Now you can run roslaunch $2 $3"
+        build_package $2
+        echo "Now you can run roslaunch $3 $4"
     fi
 }
 
 
 function build_package(){
-    cd "quizzes/$1" && catkin_make
+    cd "$1/$2" && catkin_make
 }
 
 function is_built(){
-     [[ -d "quizzes/$1/devel" && -d "quizzes/$1/build" ]]
+     [[ -d "$1/$2/devel" && -d "$1/$2/build" ]]
      return $?
 }
 
 function print_help(){
     
     cat <<EOF
-Usage: $0 [options]
-    $0 unit package roslaunchfile
+Usage: $0 [quizzes, examples] [unit] [package] [roslaunch]
 EOF
 }
 
-if [ "$#" -eq 0 ]
+if [ "$#" -le 4 ]
 then
     print_help
     exit 1
