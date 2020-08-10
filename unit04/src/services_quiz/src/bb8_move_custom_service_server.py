@@ -15,17 +15,19 @@ class cServiceServer(object):
         repetitions = request.repetitions
         side = request.side*time_size_scale
         rate = rospy.Rate(side)
+        rate_lin = rospy.Rate(side*10)
 
         for _ in range(repetitions):
             for _ in range(4):
                 self.move_linear(1)
-                rate.sleep()
+                rate_lin.sleep()
                 self.move_angular(0.5)
                 rate.sleep()
             self.move_linear(0.0)
             self.move_angular(0.0)
             rate.sleep()
 
+        del rate
         my_response = BB8CustomServiceMessageResponse()
         my_response.success = True
         return  my_response 
@@ -34,11 +36,13 @@ class cServiceServer(object):
         command = Twist()
         command.linear.x = _vx
         self.pub_.publish(command)
+        del command
 
     def move_angular(self, _wz):
         command = Twist()
         command.angular.z = _wz
         self.pub_.publish(command)
+        del command
 
 
 def main():
