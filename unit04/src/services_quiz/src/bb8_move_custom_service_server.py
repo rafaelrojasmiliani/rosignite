@@ -17,7 +17,6 @@ class cServiceServer(object):
         time_size_scale = 5
         repetitions = request.repetitions
         side = request.side*time_size_scale
-        rospy.loginfo(side)
 
         for _ in range(repetitions):
             for _ in range(4):
@@ -35,6 +34,7 @@ class cServiceServer(object):
         while displacement < _side:
             self.pub_.publish(command)
             displacement += _vel*self.time_step_
+            rospy.loginfo('move linear {:.4f}'.format(displacement))
 
         self.rate_.sleep()
 
@@ -45,6 +45,7 @@ class cServiceServer(object):
         while displacement < np.pi/2.0:
             self.pub_.publish(command)
             displacement += _vel*self.time_step_
+            rospy.loginfo('move angular {:.4f}'.format(displacement))
 
 
 def main():
