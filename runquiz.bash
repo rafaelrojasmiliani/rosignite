@@ -20,19 +20,17 @@ function main(){
         exit 1
     fi
 
-    if is_built; then
+    if is_built $1; then
         roslaunch "$2" "$3"
     else
-        build_package
+        build_package $1
         echo "Now you can run roslaunch $2 $3"
     fi
 }
 
 
 function build_package(){
-    if [ ! -d "quizzes/$1/devel" ]; then
-        cd "quizzes/$1" && catkin_make
-    fi
+    cd "quizzes/$1" && catkin_make
 }
 
 function is_built(){
