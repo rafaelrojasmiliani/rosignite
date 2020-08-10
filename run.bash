@@ -20,10 +20,10 @@ function main(){
         exit 1
     fi
 
-    if is_built $2; then
+    if is_built $1 $2; then
         roslaunch "$3" "$4"
     else
-        build_package $2
+        build_package $1 $2
         echo "Now you can run roslaunch $3 $4"
     fi
 }
