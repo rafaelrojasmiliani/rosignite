@@ -14,14 +14,14 @@ class cServiceServer(object):
         request = _data[0]
         time_size_scale = 5
         repetitions = request.repetitions
-        size = request.size*time_size_scale
+        side = request.side*time_size_scale
 
         for _ in range(repetitions):
             for _ in range(4):
                 self.move_linear(0.5)
-                self.rate_(size)
+                self.rate_(side)
                 self.move_angular(0.5)
-                self.rate_(size)
+                self.rate_(side)
 
         my_response = BB8CustomServiceMessageResponse()
         my_response.success = True
