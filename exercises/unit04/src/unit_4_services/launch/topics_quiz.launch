@@ -1,3 +1,0 @@
-<launch>
-<node name= "topics_quiz_node" pkg="topics_quiz" type="pubsub.py" output="screen"/>
-</launch>

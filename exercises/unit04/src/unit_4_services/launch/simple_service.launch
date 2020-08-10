@@ -1,3 +1,0 @@
-<launch>
-  <node name="example_4_7" pkg="unit_4_services" type="simple_service_server.py" output="screen"/>
-</launch>
