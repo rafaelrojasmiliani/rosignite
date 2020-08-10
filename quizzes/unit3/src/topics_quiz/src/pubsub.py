@@ -12,13 +12,13 @@ class cPubSub(object):
 
     def control_action(self, *data):
         msg = data[0]
-        print('len of the array is {:d}'.format(len(msg.ranges)))
+        rospy.loginfo('len of the array is {:d}'.format(len(msg.ranges)))
         msg = Twist()
         v = np.random.rand(3) 
         w = np.random.rand(3) 
         for coord, vi, wi in zip('xyz', v, w):
-            setattr(msg.linear, coord, vi)
-            setattr(msg.angular, coord, wi)
+            setattr(msg.linear, coord, 0.0)
+            setattr(msg.angular, coord, 0.0)
         self.pub_.publish(msg)
 
 
