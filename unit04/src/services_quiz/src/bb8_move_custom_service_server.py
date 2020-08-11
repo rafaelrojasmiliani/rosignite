@@ -51,7 +51,8 @@ class cServiceServer(object):
             displacement += _vel*self.time_step_
         command.angular.z = 0.0
         self.pub_.publish(command)
-        self.rate_.sleep()
+        for _ in range(500):
+            self.rate_.sleep()
 
 
 def main():
