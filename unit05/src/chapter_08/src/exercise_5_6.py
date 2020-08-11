@@ -69,6 +69,13 @@ class cActionClient(object):
         self.rate_.sleep()
 
     def land_drone(self):
+        msg = Twist()
+        msg.angular.z = 0
+        msg.linear.x = 0
+        msg.linear.y = 0
+        elapsed_time = 0.0
+        self.cmd_vel_pub_.publish(msg)
+        self.rate_.sleep()
         pub = rospy.Publisher('/drone/land', Empty, queue_size=10)
         msg = Empty()
         pub.publish(msg)
