@@ -1,4 +1,4 @@
 <launch>
 <include file="$(find ardrone_as)/launch/action_server.launch"/>
-<node name="example_5_4_a" pkg="chapter_08" type="ardrone_action_client.py"/>
+<node name="example_5_4_a" pkg="chapter_08" type="ardrone_action_client.py" output="screen"/>
 </launch>
