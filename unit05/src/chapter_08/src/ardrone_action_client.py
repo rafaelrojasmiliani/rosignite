@@ -34,3 +34,5 @@ def main():
     action_client.action_.cancel_goal()  # would cancel the goal 3 seconds after starting
     rospy.loginfo('The status is = {:d}'.format(status))
 
+if __name__ == '__main__':
+    main()
