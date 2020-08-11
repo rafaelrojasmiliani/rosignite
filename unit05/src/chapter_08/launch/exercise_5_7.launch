@@ -1,0 +1,4 @@
+<launch>
+<include file="$(find ardrone_as)/launch/action_server.launch"/>
+<node name="client" pkg="chapter_08" type="cancel_goal_test.py" output="screen"/>
+</launch>

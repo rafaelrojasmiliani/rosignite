@@ -45,6 +45,9 @@ class cActionClient(object):
         action_state = action.get_state()
         while action_state < SimpleGoalState.DONE:
             self.move_drone()
+            if np.random.rand()<0.2:
+                action.cancel_goal()
+                break
             action_state = action.get_state()
 
         self.land_drone()
