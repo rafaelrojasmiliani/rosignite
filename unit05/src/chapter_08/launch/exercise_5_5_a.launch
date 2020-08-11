@@ -1,0 +1,4 @@
+<launch>
+<include file="$(find ardrone_as)/launch/action_server.launch"/>
+<node name="wait_client" pkg="chapter_08" type="wait_for_result_test.py"/>
+</launch>

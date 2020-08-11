@@ -1,3 +1,0 @@
-<launch>
-<node name="example_4_3" pkg="my_custom_srv_msg_pkg" type="custom_service_server.py"/>
-</launch>
