@@ -14,7 +14,7 @@ class cServiceServer(object):
 
     def service(self, *_data):
         request = _data[0]
-        time_size_scale = 5
+        time_size_scale = 0.1
         repetitions = request.repetitions
         side = request.side*time_size_scale
 
