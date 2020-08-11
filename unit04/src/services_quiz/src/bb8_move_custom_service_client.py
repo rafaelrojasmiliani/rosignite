@@ -10,6 +10,9 @@ def main():
     req.side = 5
     req.repetitions = 2
     service(req)
+    req.side = 1
+    req.repetitions = 1
+    service(req)
 
 if __name__ == '__main__':
     main()
