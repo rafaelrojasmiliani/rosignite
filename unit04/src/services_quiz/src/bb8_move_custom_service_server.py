@@ -8,7 +8,7 @@ class cServiceServer(object):
     def __init__(self):
         self.srv_ = rospy.Service('/move_bb8_in_square_custom', BB8CustomServiceMessage , self.service) 
         self.pub_ = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
-        self.time_step_ = 0.1
+        self.time_step_ = 0.001
         self.rate_ = rospy.Rate(1.0/self.time_step_)
 
 
