@@ -10,7 +10,7 @@ class cActionClient(object):
     def __init__(self):
         self.images_number_ = 1
         self.action_ = actionlib.SimpleActionClient('/ardrone_action_server', ArdroneAction)
-        self.rate_ = rospy.Rate(0.01)
+        self.rate_ = rospy.Rate(10)
 
     def feedback_callback(self, _feedback):
         rospy.loginfo('[Feedback] image n{:d} received'.format(self.images_number_))
