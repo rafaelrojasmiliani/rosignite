@@ -35,12 +35,12 @@ class cServiceServer(object):
         command.linear.x = 0.0
         self.pub_.publish(command)
         self.rate_.sleep()
-        command.linear.y = _vel
+        command.angular.z = _vel
         displacement = 0.0
         self.pub_.publish(command)
         displacement += _vel*self.time_step_
         self.rate_.sleep()
-        command.linear.y = 0.0
+        command.angular.z = 0.0
         self.pub_.publish(command)
         self.rate_.sleep()
 
