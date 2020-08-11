@@ -58,7 +58,7 @@ class cActionClient(object):
     def move_drone(self, _seconds):
         pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
         msg = Twist()
-        msg.z = 1
+        msg.angular.z = 1
         elapsed_time = 0.0
         while elapsed_time < _seconds:
             pub.publish(msg)
