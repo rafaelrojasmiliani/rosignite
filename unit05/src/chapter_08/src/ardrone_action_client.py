@@ -18,21 +18,25 @@ class cActionClient(object):
         self.execute_action(_nsecods)
         self.action_.wait_for_server()
 
-    def execute_action(self, _nsecods):
+    def execute_action_wait_and_stop(self):
+        ''' Example to show that an action is asynchronous'''
         goal = ArdroneGoal()
-        goal.nseconds = _nsecods 
-        client.send_goal(goal, feedback_cb=self.feedback_callback)
+        goal.nseconds = 30
+        action = self.action_
+        action.send_goal(goal, feedback_cb=self.feedback_callback)
+        time.sleep(0.5)
+        rospy.loginfo('It is asynchronous!!')
+        status = action.get_state()
+        rospy.loginfo('The status is = {:d}'.format(status))
+        action.cancel_goal()  # would cancel the goal 3 seconds after starting
+        status = action.get_state()
+        rospy.loginfo('The status is = {:d}'.format(status))
+        
 
 def main():
     rospy.init_node('drone_action_client')
     action_client = cActionClient()
-    action_client.execute_action(20)
-    time.sleep(0.5)
-    rospy.loginfo('It is asynchronous!!')
-    status = action_client.action_.get_state()
-    rospy.loginfo('The status is = {:d}'.format(status))
-    action_client.action_.cancel_goal()  # would cancel the goal 3 seconds after starting
-    rospy.loginfo('The status is = {:d}'.format(status))
+    action_client.execute_action_wait_and_stop()
 
 if __name__ == '__main__':
     main()
