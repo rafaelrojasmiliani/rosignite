@@ -52,8 +52,6 @@ class cActionClient(object):
         pub.publish(msg)
         for _ in range(100):
             self.rate_.sleep()
-        del pub
-        del msg
 
     def move_drone(self, _seconds):
         pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
@@ -76,8 +74,6 @@ class cActionClient(object):
         pub.publish(msg)
         for _ in range(100):
             self.rate_.sleep()
-        del pub
-        del msg
 
         
 
