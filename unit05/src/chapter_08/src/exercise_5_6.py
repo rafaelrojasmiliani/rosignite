@@ -5,6 +5,7 @@ import actionlib
 from ardrone_as.msg import ArdroneAction, ArdroneGoal
 from std_msgs.msg import Empty
 from geometry_msgs.msg import Twist
+import numpy as np
 
 class SimpleGoalState:
     PENDING = 0
@@ -17,8 +18,9 @@ class cActionClient(object):
     def __init__(self):
         self.images_number_ = 1
         self.action_ = actionlib.SimpleActionClient('/ardrone_action_server', ArdroneAction)
-        self.time_step_ = 0.01
+        self.time_step_ = 0.1
         self.rate_ = rospy.Rate(1.0/self.time_step_)
+        self.cmd_vel_pub_ = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 
     def feedback_callback(self, _feedback):
         rospy.loginfo('[Feedback] image n{:d} received'.format(self.images_number_))
@@ -40,7 +42,9 @@ class cActionClient(object):
 
         self.takeoff_drone()
 
-        self.move_drone(10)
+        while action_state < SimpleGoalState.DONE:
+            self.move_drone()
+            action_state = action.get_state()
 
         self.land_drone()
 
@@ -53,20 +57,14 @@ class cActionClient(object):
         for _ in range(100):
             self.rate_.sleep()
 
-    def move_drone(self, _seconds):
-        pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+    def move_drone(self):
         msg = Twist()
         msg.angular.z = 1
+        msg.linear.x = np.rand.random()*0.1
+        msg.linear.y = np.rand.random()*0.1
         elapsed_time = 0.0
-        while elapsed_time < _seconds:
-            pub.publish(msg)
-            self.rate_.sleep()
-            elapsed_time += self.time_step_
-        msg.angular.z = 0
-        pub.publish(msg)
+        self.cmd_vel_pub_.publish(msg)
         self.rate_.sleep()
-        del pub
-        del msg
 
     def land_drone(self):
         pub = rospy.Publisher('/drone/land', Empty, queue_size=10)
