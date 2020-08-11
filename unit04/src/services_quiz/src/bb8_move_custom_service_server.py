@@ -27,7 +27,7 @@ class cServiceServer(object):
         my_response.success = True
         return  my_response 
 
-    def move_linear(self, _side, _vel=1.0):
+    def move_linear(self, _side, _vel=0.2):
         command = Twist()
         command.linear.x = _vel
         displacement = 0.0
@@ -40,7 +40,7 @@ class cServiceServer(object):
         self.pub_.publish(command)
         self.rate_.sleep()
 
-    def move_angular(self, _vel=1.0):
+    def move_angular(self, _vel=0.2):
         command = Twist()
         command.angular.z = _vel
         displacement = 0.0
