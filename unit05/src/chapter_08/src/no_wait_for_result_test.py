@@ -5,6 +5,12 @@ import actionlib
 from ardrone_as.msg import ArdroneAction, ArdroneGoal, ArdroneResult, ArdroneFeedback
 import smach
 
+class SimpleGoalState:
+    PENDING = 0
+    ACTIVE = 1
+    DONE = 2
+    WARN = 3
+    ERROR = 4
 
 class cActionClient(object):
     def __init__(self):
@@ -28,9 +34,13 @@ class cActionClient(object):
         action.wait_for_server()
         action.send_goal(goal, feedback_cb=self.feedback_callback)
 
-        while not action.wait_for_result():
+        action_state = action.get_state()
+
+        while action_state < SimpleGoalState.DONE:
             rospy.loginfo("Doing Stuff while waiting for the Server to give a result....")
             self.rate_.sleep()
+            action_state = action.get_state()
+            rospy.loginfo("action state: {:d}".format(action_state))
         
 
 def main():

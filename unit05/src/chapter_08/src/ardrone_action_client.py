@@ -3,6 +3,7 @@ import rospy
 import time
 import actionlib
 from ardrone_as.msg import ArdroneAction, ArdroneGoal, ArdroneResult, ArdroneFeedback
+import smach
 
 
 class cActionClient(object):
@@ -23,6 +24,7 @@ class cActionClient(object):
         goal = ArdroneGoal()
         goal.nseconds = 30
         action = self.action_
+        action.wait_for_server()
         action.send_goal(goal, feedback_cb=self.feedback_callback)
         time.sleep(10)
         rospy.loginfo('It is asynchronous!!')
