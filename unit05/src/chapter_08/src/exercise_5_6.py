@@ -62,8 +62,8 @@ class cActionClient(object):
     def move_drone(self):
         msg = Twist()
         msg.angular.z = 1
-        msg.linear.x = np.rand.random()*0.1
-        msg.linear.y = np.rand.random()*0.1
+        msg.linear.x = np.random.rand()*0.1
+        msg.linear.y = np.random.rand()*0.1
         elapsed_time = 0.0
         self.cmd_vel_pub_.publish(msg)
         self.rate_.sleep()
