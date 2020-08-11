@@ -30,6 +30,9 @@ class cActionClient(object):
         rospy.loginfo('The status is = {:d}'.format(status))
         action.cancel_goal()  # would cancel the goal 3 seconds after starting
         status = action.get_state()
+        rospy.loginfo('just after cancel = {:d}'.format(status))
+        time.sleep(2)
+        status = action.get_state()
         rospy.loginfo('The status is = {:d}'.format(status))
         
 
