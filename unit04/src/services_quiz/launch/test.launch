@@ -1,4 +1,4 @@
 <launch>
   <include file="$(find services_quiz)/launch/start_bb8_move_custom_service_server.launch"/>
-  <include file="$(find services_quiz)/launch/call_bb8_move_custom_service_server.launch"/>
+  <include file="$(find services_quiz)/launch/call_bb8_move_in_square_custom_service_server.launch"/>
 </launch>
