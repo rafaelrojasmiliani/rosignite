@@ -14,7 +14,7 @@ class cServiceServer(object):
 
     def service(self, *_data):
         request = _data[0]
-        time_size_scale = 0.1
+        time_size_scale = 0.2
         repetitions = request.repetitions
         side = request.side*time_size_scale
 
@@ -44,7 +44,7 @@ class cServiceServer(object):
         command = Twist()
         command.angular.z = _vel
         displacement = 0.0
-        while displacement < np.pi/2.0:
+        while displacement < np.pi/4.0:
             self.pub_.publish(command)
             rospy.loginfo('move angular {:.4f}'.format(displacement))
             self.rate_.sleep()
