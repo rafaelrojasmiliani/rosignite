@@ -38,7 +38,7 @@ class cFibonacciCalculator(object):
         self._feedback_.sequence.append(0)
         self._feedback_.sequence.append(1)
         message = 'Executing, creating fibonacci sequence of order {} with seeds {}, {}'.format(
-            goal.order, self._feedback.sequence[0], self._feedback.sequence[1])
+            goal.order, self._feedback_.sequence[0], self._feedback_.sequence[1])
         rospy.loginfo(message)
 
         success = self.compute_fibonacci(goal.order)
