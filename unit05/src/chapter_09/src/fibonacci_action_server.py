@@ -47,7 +47,7 @@ class cFibonacciCalculator(object):
             result = FibonacciResult()
             result.sequence = self._feedback_.sequence
             rospy.loginfo(
-                'Succeeded calculating the Fibonacci of order %i' % fibonacciOrder)
+                'Succeeded calculating the Fibonacci of order {}'.format(goal.order))
             self._as_.set_succeeded(self._result)
 
     def spin(self):
