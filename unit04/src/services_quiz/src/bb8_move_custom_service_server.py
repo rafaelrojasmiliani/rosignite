@@ -30,22 +30,16 @@ class cServiceServer(object):
     def move_linear(self, _side, _vel=1.0):
         command = Twist()
         command.linear.x = _vel
-        displacement = 0.0
-        while displacement < _side:
-            self.pub_.publish(command)
-            displacement += _vel*self.time_step_
-            rospy.loginfo('move linear {:.4f}'.format(displacement))
-            self.rate_.sleep()
+        self.pub_.publish(command)
+        elf.rate_.sleep()
         command.linear.x = 0.0
         self.pub_.publish(command)
         self.rate_.sleep()
         command.linear.y = _vel
         displacement = 0.0
-        while displacement < _side:
-            self.pub_.publish(command)
-            displacement += _vel*self.time_step_
-            rospy.loginfo('move linear {:.4f}'.format(displacement))
-            self.rate_.sleep()
+        self.pub_.publish(command)
+        displacement += _vel*self.time_step_
+        self.rate_.sleep()
         command.linear.y = 0.0
         self.pub_.publish(command)
         self.rate_.sleep()
