@@ -24,7 +24,7 @@ class cActionClient(object):
         goal.nseconds = 30
         action = self.action_
         action.send_goal(goal, feedback_cb=self.feedback_callback)
-        time.sleep(0.5)
+        time.sleep(10)
         rospy.loginfo('It is asynchronous!!')
         status = action.get_state()
         rospy.loginfo('The status is = {:d}'.format(status))
