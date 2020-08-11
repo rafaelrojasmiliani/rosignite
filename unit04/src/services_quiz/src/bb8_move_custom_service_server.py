@@ -18,7 +18,7 @@ class cServiceServer(object):
         repetitions = request.repetitions
         side = request.side*time_size_scale
 
-        for _ in range(repetitions+1):
+        for _ in range(repetitions):
             for _ in range(4):
                 self.move_linear(side)
                 self.move_angular()

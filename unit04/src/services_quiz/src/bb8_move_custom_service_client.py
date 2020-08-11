@@ -10,7 +10,7 @@ def main():
     req.side = 5
     req.repetitions = 2
     service(req)
-    req.side = 1
+    req.side = 2
     req.repetitions = 1
     service(req)
 
