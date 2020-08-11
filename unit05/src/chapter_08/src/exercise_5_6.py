@@ -42,6 +42,7 @@ class cActionClient(object):
 
         self.takeoff_drone()
 
+        action_state = action.get_state()
         while action_state < SimpleGoalState.DONE:
             self.move_drone()
             action_state = action.get_state()
@@ -54,7 +55,8 @@ class cActionClient(object):
         pub = rospy.Publisher('/drone/takeoff', Empty, queue_size=10)
         msg = Empty()
         pub.publish(msg)
-        for _ in range(100):
+        for _ in range(10):
+            pub.publish(msg)
             self.rate_.sleep()
 
     def move_drone(self):
@@ -70,7 +72,8 @@ class cActionClient(object):
         pub = rospy.Publisher('/drone/land', Empty, queue_size=10)
         msg = Empty()
         pub.publish(msg)
-        for _ in range(100):
+        for _ in range(10):
+            pub.publish(msg)
             self.rate_.sleep()
 
         
