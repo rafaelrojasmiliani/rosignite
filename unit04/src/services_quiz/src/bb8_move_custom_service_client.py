@@ -1,13 +1,14 @@
 #! /usr/bin/env python
 import rospy
-from my_custom_srv_msg_pkg.srv import MyCustomServiceMessage, MyCustomServiceMessageRequest # you import the service message python classes 
+from services_quiz.srv import BB8CustomServiceMessage, BB8CustomServiceMessageRequest
 
 def main():
-    rospy.init_node('exercise_4_3_client')
-    rospy.wait_for_service('/move_bb8_in_circle_custom')
-    service = rospy.ServiceProxy('/move_bb8_in_circle_custom', MyCustomServiceMessage)
-    req = MyCustomServiceMessageRequest()
-    req.duration = 5
+    rospy.init_node('services_quiz_client')
+    rospy.wait_for_service('/move_bb8_in_square_custom')
+    service = rospy.ServiceProxy('/move_bb8_in_square_custom', BB8CustomServiceMessage)
+    req = BB8CustomServiceMessageRequest()
+    req.side = 5
+    req.repetitions = 2
     service(req)
 
 if __name__ == '__main__':
