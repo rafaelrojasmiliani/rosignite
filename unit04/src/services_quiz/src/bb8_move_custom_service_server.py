@@ -8,13 +8,13 @@ class cServiceServer(object):
     def __init__(self):
         self.srv_ = rospy.Service('/move_bb8_in_square_custom', BB8CustomServiceMessage , self.service) 
         self.pub_ = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
-        self.time_step_ = 0.1
+        self.time_step_ = 0.01
         self.rate_ = rospy.Rate(self.time_step_)
 
 
     def service(self, *_data):
         request = _data[0]
-        time_size_scale = 0.1
+        time_size_scale = 0.05
         repetitions = request.repetitions
         side = request.side*time_size_scale
 
