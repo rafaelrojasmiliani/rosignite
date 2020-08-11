@@ -31,7 +31,7 @@ class cServiceServer(object):
         command = Twist()
         command.linear.x = _vel
         self.pub_.publish(command)
-        elf.rate_.sleep()
+        self.rate_.sleep()
         command.linear.x = 0.0
         self.pub_.publish(command)
         self.rate_.sleep()
