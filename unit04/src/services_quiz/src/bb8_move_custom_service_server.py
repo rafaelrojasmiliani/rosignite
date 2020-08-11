@@ -40,7 +40,7 @@ class cServiceServer(object):
         self.pub_.publish(command)
         self.rate_.sleep()
 
-    def move_angular(self, _vel=5.0):
+    def move_angular(self, _vel=1.0):
         command = Twist()
         command.angular.z = _vel
         displacement = 0.0
