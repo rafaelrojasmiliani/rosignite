@@ -22,7 +22,7 @@ class cFibonacciCalculator(object):
         action = self._as_
         feedback = self._feedback_
         for i in xrange(i1, _order):
-            if self._as.is_preempt_requested():
+            if self._as_.is_preempt_requested():
                 rospy.loginfo('The goal has been cancelled/preempted')
                 action.set_preempted()
                 return False
