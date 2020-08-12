@@ -12,10 +12,10 @@ find_package(catkin REQUIRED COMPONENTS
 #    CustomActionMsg.action
 #)
 
-generate_messages(
-    DEPENDENCIES
-    std_msgs #actionlib_msgs
-)
+#generate_messages(
+#    DEPENDENCIES
+#    std_msgs #actionlib_msgs
+#)
 
 catkin_package(
   CATKIN_DEPENDS rospy 
