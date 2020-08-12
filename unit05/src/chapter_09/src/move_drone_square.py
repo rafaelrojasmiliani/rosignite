@@ -56,7 +56,7 @@ class cDroneMission(object):
     def takeoff_drone(self):
         pub = rospy.Publisher('/drone/takeoff', Empty, queue_size=10)
         msg = Empty()
-        for _ in range(10):
+        for _ in range(40):
             pub.publish(msg)
             self.rate_.sleep()
 
@@ -70,6 +70,7 @@ class cDroneMission(object):
         while distance_traveled < _distance:
             self.cmd_vel_pub_.publish(msg)
             self.rate_.sleep()
+            distance_traveled += _vel *self.time_step_
         msg.linear.x = 0
         for _ in range(20):
             self.cmd_vel_pub_.publish(msg)
@@ -83,8 +84,9 @@ class cDroneMission(object):
         while distance_traveled < np.pi/2:
             self.cmd_vel_pub_.publish(msg)
             self.rate_.sleep()
+            distance_traveled += _vel *self.time_step_
         msg.angular.z = 0.0
-        for _ in range(20):
+        for _ in range(40):
             self.cmd_vel_pub_.publish(msg)
             self.rate_.sleep()
 
