@@ -17,7 +17,7 @@ class cDroneMission(object):
         action.start()
         self.cmd_vel_pub_ = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
         self._as_ = action
-        self.time_step_ = 0.001
+        self.time_step_ = 0.01
         self.rate_ = rospy.Rate(1.0/self.time_step_)
         self.execution_time_ = 0.0
 
@@ -65,12 +65,13 @@ class cDroneMission(object):
     def move_forward(self, _distance):
         rospy.loginfo('move forward')
         msg = Twist()
-        msg.linear.x = 0.2
+        vel = 0.2
+        msg.linear.x = vel
         distance_traveled = 0
         while distance_traveled < _distance:
             self.cmd_vel_pub_.publish(msg)
             self.rate_.sleep()
-            distance_traveled += _vel *self.time_step_
+            distance_traveled += vel *self.time_step_
         msg.linear.x = 0
         for _ in range(20):
             self.cmd_vel_pub_.publish(msg)
@@ -79,12 +80,13 @@ class cDroneMission(object):
     def turn_90(self):
         rospy.loginfo('turning 90 degress')
         msg = Twist()
-        msg.angular.z = 0.2
+        vel = 0.2
+        msg.angular.z = vel
         distance_traveled = 0
         while distance_traveled < np.pi/2:
             self.cmd_vel_pub_.publish(msg)
             self.rate_.sleep()
-            distance_traveled += _vel *self.time_step_
+            distance_traveled += vel *self.time_step_
         msg.angular.z = 0.0
         for _ in range(40):
             self.cmd_vel_pub_.publish(msg)
