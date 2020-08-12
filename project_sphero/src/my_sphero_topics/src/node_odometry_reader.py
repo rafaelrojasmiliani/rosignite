@@ -10,8 +10,10 @@ class cOdometryReader(cTopicReader):
 
     def in_spin(self):
         rospy.logdebug('[odometry]'+str(self.get_data()))
+        print('odometr')
 
 if __name__ == '__main__':
     rospy.init_node('odometry_reader')
+    print('odometr')
     reader = cOdometryReader()
     reader.spin()
