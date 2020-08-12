@@ -5,8 +5,8 @@ from sensor_msgs.msg import Imu
 from mytools import cTopicReader
 
 class cImuReader(cTopicReader):
-    def __init__(self, _topic_name = '/sphero/imu/data3'):
-        cTopicReader.__init__(self, _topic_name, Imu)
+    def __init__(self, _topic_name = '/sphero/imu/data3', **kwargs):
+        cTopicReader.__init__(self, _topic_name, Imu, **kwargs)
 
 #    def in_spin(self):
 #        rospy.loginfo('[imu]'+str(self.get_data()))

@@ -4,8 +4,8 @@ import rospy
 
 
 class cMyNode(object):
-    def __init__(self):
-        self.rate_ = rospy.Rate(1)
+    def __init__(self, _rate=1):
+        self.rate_ = rospy.Rate(_rate)
         self.is_running_ = True
 
     def shutdown(self):
@@ -34,9 +34,9 @@ class cMyNode(object):
         self.rate_.sleep()
 
 class cTopicReader(cMyNode):
-    def __init__(self, _topic_name, _topic_type):
+    def __init__(self, _topic_name, _topic_type, **kwargs):
 
-        cMyNode.__init__(self)
+        cMyNode.__init__(self, **kwargs)
         self.susbcriber_ = rospy.Subscriber(_topic_name, _topic_type, self.topic_callback)
         self.topic_name_ = _topic_name
         self.topic_type_ = _topic_type
@@ -55,8 +55,8 @@ class cTopicReader(cMyNode):
 
 
 class cTopicWriter(cMyNode):
-    def __init__(self, _topic_name, _topic_type):
-        cMyNode.__init__(self)
+    def __init__(self, _topic_name, _topic_type, **kwargs):
+        cMyNode.__init__(self, **kwargs)
         self.pub_ = rospy.Publisher(_topic_name, _topic_type, queue_size=10)
         self.topic_name_ = _topic_name
         self.topic_type_ = _topic_type
