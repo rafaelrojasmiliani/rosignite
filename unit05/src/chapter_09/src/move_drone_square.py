@@ -15,6 +15,7 @@ class cDroneMission(object):
         action = actionlib.SimpleActionServer(
             'move_drone_square_as', TestAction, self.goal_callback, False)
         action.start()
+        self.cmd_vel_pub_ = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
         self._as_ = action
         self.time_step_ = 0.001
         self.rate_ = rospy.Rate(1.0/self.time_step_)
