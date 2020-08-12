@@ -6,7 +6,7 @@ from mytools import cTopicWriter
 
 
 class cSpheroVelControl(cTopicWriter):
-    def __init__(self, _topic_name):
+    def __init__(self, _topic_name='/cmd_vel'):
         cTopicWriter.__init__(self, _topic_name, Twist)
         
     def build_message(self):
