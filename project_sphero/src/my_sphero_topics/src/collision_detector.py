@@ -15,9 +15,7 @@ class cCollisionDetectionService(cImuReader):
 
     def in_spin(self):
         imu_data = self.get_data()
-        rospy.loginfo('[collision detector] in spin')
         acc = np.array([getattr(imu_data.linear_acceleration, comp) for comp in 'xyz'])
-        
         if np.linalg.norm(acc) > self._threshhold:
             self.collition_info_ = acc
         
