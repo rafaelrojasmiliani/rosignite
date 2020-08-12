@@ -6,7 +6,7 @@ from mytools import cTopicReader
 
 class cOdometryReader(cTopicReader):
     def __init__(self, _topic_name = '/odom'):
-        cTopicReader.__init__(_topic_name, Odometry)
+        cTopicReader.__init__(self, _topic_name, Odometry)
 
     def in_spin(self):
         rospy.logdebug('[odometry]'+str(self.get_data()))
