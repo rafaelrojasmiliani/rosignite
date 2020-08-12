@@ -11,6 +11,7 @@ class cSpheroVelControl(cTopicWriter):
         
     def build_message(self):
         msg = Twist()
+        direction = 'forwards'
         if direction == 'forwards':
             msg.linear.x = self.linearspeed_
         elif direction == 'right':
