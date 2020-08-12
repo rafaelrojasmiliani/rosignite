@@ -6,6 +6,7 @@ import rospy
 class cMyNode(object):
     def __init__(self):
         self.rate_ = rospy.Rate(1)
+        self.is_running_ = True
 
     def shutdown(self):
         rospy.loginfo('shutdown time!')
