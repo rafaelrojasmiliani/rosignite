@@ -57,7 +57,7 @@ class cDroneMission(object):
     def takeoff_drone(self):
         pub = rospy.Publisher('/drone/takeoff', Empty, queue_size=10)
         msg = Empty()
-        for _ in range(40):
+        for _ in range(100):
             pub.publish(msg)
             self.rate_.sleep()
 
