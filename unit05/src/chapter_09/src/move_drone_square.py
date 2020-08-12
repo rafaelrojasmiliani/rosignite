@@ -24,6 +24,7 @@ class cDroneMission(object):
     def mission(self, _size):
         t0 = time.time()
 
+        rospy.loginfo('Take off drone')
         self.takeoff_drone()
         action = self._as_
         feedback = self._feedback_
@@ -42,9 +43,6 @@ class cDroneMission(object):
 
     def goal_callback(self, _goal):
 
-        rospy.loginfo('--------------------------')
-        rospy.loginfo('--------------------------')
-        rospy.loginfo('--------------------------')
         success = self.mission(_goal.goal)
 
         if success:
@@ -58,7 +56,6 @@ class cDroneMission(object):
     def takeoff_drone(self):
         pub = rospy.Publisher('/drone/takeoff', Empty, queue_size=10)
         msg = Empty()
-        pub.publish(msg)
         for _ in range(10):
             pub.publish(msg)
             self.rate_.sleep()
@@ -66,6 +63,7 @@ class cDroneMission(object):
         return True
 
     def move_forward(self, _distance):
+        rospy.loginfo('move forward')
         msg = Twist()
         msg.linear.x = 0.2
         distance_traveled = 0
@@ -78,6 +76,7 @@ class cDroneMission(object):
             self.rate_.sleep()
 
     def turn_90(self):
+        rospy.loginfo('turning 90 degress')
         msg = Twist()
         msg.angular.z = 0.2
         distance_traveled = 0
