@@ -8,7 +8,7 @@ import numpy as np
 
 class cCollisionDetectionService(cImuReader):
     def __init__(self, _srv_name='/crash_direction_service'):
-        cImuReader.__init__(self, _rate=0.001)
+        cImuReader.__init__(self, _rate=0.01)
         self.collition_info_ = None
         self._my_service_ = rospy.Service(_srv_name, Trigger , self.srv_callback)
         self._threshhold = 7.00
@@ -16,6 +16,8 @@ class cCollisionDetectionService(cImuReader):
     def in_spin(self):
         imu_data = self.get_data()
         acc = np.array([getattr(imu_data.linear_acceleration, comp) for comp in 'xyz'])
+
+        rospy.loginfo('blabla')
         if np.linalg.norm(acc) > self._threshhold:
             self.collition_info_ = acc
         
