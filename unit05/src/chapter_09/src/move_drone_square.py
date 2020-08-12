@@ -42,6 +42,9 @@ class cDroneMission(object):
 
     def goal_callback(self, _goal):
 
+        rospy.loginfo('--------------------------')
+        rospy.loginfo('--------------------------')
+        rospy.loginfo('--------------------------')
         success = self.mission(_goal.goal)
 
         if success:
