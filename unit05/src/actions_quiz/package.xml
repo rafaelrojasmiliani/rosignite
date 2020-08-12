@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>actions_quiz</name>
+  <version>0.0.0</version>
+  <description>Examples of unit5 for rosignite accadepy</description>
+
+
+  <maintainer email="rafaerojasmiliani@gmail.com">Rafael A. Rojas</maintainer>
+
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <build_export_depend>message_runtime</build_export_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>ardrone_as</exec_depend>
+  <exec_depend>actionlib_tutorials</exec_depend>
+
+  <export>
+  </export>
+</package>

@@ -7,21 +7,6 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
 )
 
-#add_message_files(
-#  FILES
-#  Age.msg
-#)
-add_service_files(
-  FILES
-  MyCustomServiceMessage.srv
-)
-
-generate_messages(
-  DEPENDENCIES
-  std_msgs
-)
-
-
 catkin_package(
   CATKIN_DEPENDS rospy message_runtime
 )
