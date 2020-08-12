@@ -1,5 +1,5 @@
 <launch>
-<node name="imu" pkg="my_sphero_topics" type="node_imu_reader.py" output="screen"/>
-<node name="imu" pkg="my_sphero_topics" type="note_vel_cmd_pub.py" output="screen"/>
-<node name="imu" pkg="my_sphero_topics" type="node_odometry_reader.py" output="screen"/>
+<node name="imu_reader" pkg="my_sphero_topics" type="node_imu_reader.py" output="screen"/>
+<node name="vel_cmd_pub" pkg="my_sphero_topics" type="note_vel_cmd_pub.py" output="screen"/>
+<node name="odo_reader" pkg="my_sphero_topics" type="node_odometry_reader.py" output="screen"/>
 </launch>
