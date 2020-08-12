@@ -24,12 +24,9 @@ class cMyNode(object):
     def spin(self):
         self.pre_spin()
 
-        rospy.loginfo('is running' + str(self.is_running_))
         while self.is_running_:
             self.in_spin()
-            rospy.loginfo('running' + str(self.is_running_) + str(self.__class__.__name__))
             self.sleep()
-        rospy.loginfo('after while')
 
         self.post_spin()
 

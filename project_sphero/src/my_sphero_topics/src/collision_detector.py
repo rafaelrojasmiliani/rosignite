@@ -18,8 +18,10 @@ class cCollisionDetectionService(cImuReader):
         acc = np.array([getattr(imu_data.linear_acceleration, comp) for comp in 'xyz'])
 
         rospy.loginfo('blabla')
+        rospy.loginfo(str(type(acc)))
         if np.linalg.norm(acc) > self._threshhold:
             self.collition_info_ = acc
+        rospy.loginfo('blabla-------------')
         
 
     def srv_callback(self, request):
