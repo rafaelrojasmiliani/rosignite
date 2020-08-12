@@ -63,7 +63,7 @@ class cDroneMission(object):
 
 
 if __name__ == '__main__':
-    rospy.init_node('drone_move_square')
+    rospy.init_node('actions_quiz')
     drone = cDroneMission()
     drone.spin()
 
