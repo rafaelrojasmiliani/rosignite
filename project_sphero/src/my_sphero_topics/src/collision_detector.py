@@ -17,7 +17,6 @@ class cCollisionDetectionService(cImuReader):
         imu_data = self.get_data()
         acc = np.array([getattr(imu_data.linear_acceleration, comp) for comp in 'xyz'])
 
-        rospy.loginfo(str(type(acc)))
         if np.linalg.norm(acc) > self._threshhold:
             self.collition_info_ = acc
         
