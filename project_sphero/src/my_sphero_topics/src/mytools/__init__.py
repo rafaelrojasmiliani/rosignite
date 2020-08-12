@@ -66,5 +66,5 @@ class cTopicWriter(cMyNode):
         pass
 
     def in_spin(self):
-        msg = self.get_message()
+        msg = self.build_message()
         self.pub_.publish(msg)
