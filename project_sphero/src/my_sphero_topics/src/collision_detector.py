@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import rospy
-from node_imu_service import cImuReader
+from node_imu_reader import cImuReader
 from std_srvs.srv import Trigger, TriggerResponse
 import numpy as np
 
