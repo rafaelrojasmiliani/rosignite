@@ -11,7 +11,6 @@ class cMyNode(object):
     def shutdown(self):
         rospy.loginfo('shutdown time!')
         self.is_running_ = False
-        self.move_robot('stop')
 
     def pre_spin(self):
         pass
