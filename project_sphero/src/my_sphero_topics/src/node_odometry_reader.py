@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 
 import rospy
-from sensor_msgs.msg import Imu
+from nav_msgs.msg import Odometry
 from mytools import cTopicReader
 
-class cImuReader(cTopicReader):
+class cOdometryReader(cTopicReader):
     def __init__(self, _topic_name = '/odom'):
         cTopicReader.__init__(_topic_name, Odometry)
 
@@ -12,6 +12,6 @@ class cImuReader(cTopicReader):
         rospy.logdebug('[odometry]'+str(self.get_data()))
 
 if __name__ == '__main__':
-    rospy.init_node('imu_reader')
-    reader = cImuReader()
+    rospy.init_node('odometry_reader')
+    reader = cOdometryReader()
     reader.spin()
