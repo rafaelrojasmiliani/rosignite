@@ -4,17 +4,17 @@ project(my_sphero_topics)
 
 find_package(catkin REQUIRED COMPONENTS
   std_msgs
-  actionlib_msgs
+  #  actionlib_msgs
 )
 
-add_action_files(
-    FILES
-    CustomActionMsg.action
-)
+#add_action_files(
+#    FILES
+#    CustomActionMsg.action
+#)
 
 generate_messages(
     DEPENDENCIES
-    std_msgs actionlib_msgs
+    std_msgs #actionlib_msgs
 )
 
 catkin_package(
