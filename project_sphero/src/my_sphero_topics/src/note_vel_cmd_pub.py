@@ -8,6 +8,8 @@ from mytools import cTopicWriter
 class cSpheroVelControl(cTopicWriter):
     def __init__(self, _topic_name='/cmd_vel'):
         cTopicWriter.__init__(self, _topic_name, Twist)
+        self.linearspeed_ = 0.2
+        self.angularspeed_ = 0.2
         
     def build_message(self):
         msg = Twist()
