@@ -10,7 +10,7 @@ class cCollisionDetectionService(cImuReader):
     def __init__(self, _srv_name='/crash_direction_service'):
         cImuReader.__init__(self, _rate=0.001)
         self.collition_info_ = None
-        self._my_service_ = rospy.Service(self._srv_name, Trigger , self.srv_callback)
+        self._my_service_ = rospy.Service(_srv_name, Trigger , self.srv_callback)
         self._threshhold = 7.00
 
     def in_spin(self):
