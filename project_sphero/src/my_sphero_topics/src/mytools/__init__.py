@@ -49,7 +49,7 @@ class cTopicReader(cMyNode):
     def get_data(self):
         return self._data_
 
-    def pre_spin(self)
+    def pre_spin(self):
         rospy.wait_for_message(self.topic_name_, self.topic_type_)
 
 
