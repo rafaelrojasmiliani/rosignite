@@ -27,7 +27,7 @@ class cMyNode(object):
         rospy.loginfo('is running' + str(self.is_running_))
         while self.is_running_:
             self.in_spin()
-            rospy.loginfo('running' + str(self.is_running_))
+            rospy.loginfo('running' + str(self.is_running_) + str(self.__class__.__name__))
             self.sleep()
         rospy.loginfo('after while')
 
