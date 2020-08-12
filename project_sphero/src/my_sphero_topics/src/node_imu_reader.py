@@ -9,7 +9,7 @@ class cImuReader(cTopicReader):
         cTopicReader.__init__(self, _topic_name, Imu)
 
     def in_spin(self):
-        rospy.logdebug('[imu]'+str(self.get_data()))
+        rospy.loginfo('[imu]'+str(self.get_data()))
 
 if __name__ == '__main__':
     rospy.init_node('imu_reader')
