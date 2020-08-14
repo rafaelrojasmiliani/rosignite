@@ -1,3 +1,6 @@
 *.pyc
-*/devel/*
+devel*
+build*
 .*.swp
+.catkin_workspace
+*/src/CMakeLists.txt
