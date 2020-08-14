@@ -12,7 +12,7 @@
     <rosparam file="$(find my_gurdy_description)/config/gurdy_control.yaml" command="load"/>
 
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-        output="screen" ns="/gurdy" args="roll_joint_position_controller head_upperlegM1_joint_controller upperlegM1_lowerlegM1_joint_controller head_upperlegM2_joint_controller upperlegM2_lowerlegM2_joint_controller head_upperlegM3_joint_controller upperlegM3_lowerlegM3_joint_controller --shutdown-timeout 3"/>
+        output="screen" ns="/gurdy" args="joint_state_controller head_upperlegM1_joint_controller upperlegM1_lowerlegM1_joint_controller head_upperlegM2_joint_controller upperlegM2_lowerlegM2_joint_controller head_upperlegM3_joint_controller upperlegM3_lowerlegM3_joint_controller --shutdown-timeout 3"/>
 
 <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
     respawn="false" output="screen">
