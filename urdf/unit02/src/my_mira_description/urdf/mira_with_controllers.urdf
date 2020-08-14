@@ -33,7 +33,7 @@
         <visual>
             <origin rpy="0.0 0 0" xyz="0 0 0"/>
             <geometry>
-                <mesh filename="package://my_mira_description/models/mira/meshes/mira_body_v3.dae"/>
+                <cylinder radius="0.06" length="0.09"/>
             </geometry>
         </visual>
 	</link>
@@ -199,7 +199,7 @@
 		<visual>
             <origin rpy="0.0 0 0" xyz="0 0 0"/>
             <geometry>
-                <mesh filename="package://my_mira_description/models/mira/meshes/mira_head_v5.dae"/>
+                <sphere radius="0.06"/>
             </geometry>
         </visual>
 	</link>
@@ -221,10 +221,7 @@
 		<visual>
             <origin rpy="0.0 0 0" xyz="0 0 0"/>
             <geometry>
-                <!--
                 <cylinder radius="0.00525" length="0.00525"/>
-                -->
-                <mesh filename="package://my_mira_description/models/mira/meshes/mira_eye_v4.dae"/>
             </geometry>
         </visual>
 	</link>
@@ -239,10 +236,7 @@
 		<visual>
             <origin rpy="0.0 0 0" xyz="0 0 0"/>
             <geometry>
-                <!--
                 <cylinder radius="0.00525" length="0.00525"/>
-                -->
-                <mesh filename="package://my_mira_description/models/mira/meshes/mira_eye_v4.dae"/>
             </geometry>
         </visual>
 	</link>
