@@ -1,5 +1,5 @@
 <launch>
-  <!--<rosparam file="$(find my_mira_description)/config/mira_control.yaml" command="load"/>-->
+  <rosparam command="load" file="$(find my_mira_description)/config/mira_control.yaml"/>
   <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
     output="screen" ns="/mira" args="roll_joint_position_controller pitch_joint_position_controller yaw_joint_position_controller joint_state_controller --shutdown-timeout 3"/>
 
