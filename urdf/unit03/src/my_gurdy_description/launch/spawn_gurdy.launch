@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <param name="robot_description" command="cat $(find my_gurdy_description)/urdf/gurdy.urdf"/>
+    <arg name="x" default="0.0" />
+    <arg name="y" default="0.0" />
+    <arg name="z" default="0.0" />
+
+    <node name="gazebo_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+    args="-urdf -x $(arg x) -y $(arg y) -z $(arg z)  -model gurdy -param robot_description"/>
+</launch>
