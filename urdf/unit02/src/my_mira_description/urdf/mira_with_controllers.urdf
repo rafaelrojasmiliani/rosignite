@@ -190,10 +190,7 @@
         <collision>
             <origin xyz="0 0 0.015" rpy="0 0 0"/>
             <geometry>
-                <!--
                 <cylinder radius="0.06" length="0.035"/>
-                -->
-                <sphere radius="0.06"/>
             </geometry>
         </collision>
 		<visual>
