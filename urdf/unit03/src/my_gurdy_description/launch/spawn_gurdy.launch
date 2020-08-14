@@ -6,7 +6,7 @@
     <arg name="y" default="0.0" />
     <arg name="z" default="0.0" />
 
-    <node name="gazebo_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+    <node name="gazebo_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" 
         args="-urdf -x $(arg x) -y $(arg y) -z $(arg z)  -model gurdy -param robot_description" output="screen"/>
 
     <rosparam file="$(find my_gurdy_description)/config/gurdy_control.yaml" command="load"/>
