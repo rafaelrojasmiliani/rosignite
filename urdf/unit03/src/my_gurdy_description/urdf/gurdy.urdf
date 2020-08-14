@@ -1,21 +1,213 @@
 <?xml version="1.0"?>
-<robot name="mira">
+<robot name="gurdy">
 
-    <link name="world" />
+    <material name="gray">
+        <color rgba="0.7 0.7 0.7 1"/>
+    </material>
+    <link name="world"/>
     <link name="base_link">
+        <!--
         <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>
-                <mesh filename="package://my_mira_description/models/gurdy/meshes/mira_body_v3.dae"/>
+                <mesh filename="package://my_gurdy_description/models/gurdy/meshes/gurdy_base.dae"/>
+            </geometry>
+        </visual>
+        -->
+    </link>
+    <link name="head_link">
+        <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="package://my_gurdy_description/models/gurdy/meshes/gurdy_head.dae"/>
             </geometry>
         </visual>
     </link>
+
+    
+    <link name="upperleg_M1_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="1.579 0 0"/> 
+            <geometry>
+                <!--
+                <cylinder radius="0.0025" length="0.04"/>
+                -->
+                <mesh filename="package://my_gurdy_description/models/gurdy/meshes/gurdy_higherleg.dae"/>
+            </geometry>
+        </visual>
+    </link>
+    <link name="lowerleg_M1_link">
+        <visual>
+            <origin xyz="0 -0.015 0" rpy="1.579 0 3.14159"/> 
+            <geometry>
+                <!--
+                <cylinder radius="0.0025" length="0.04"/>
+                -->
+                <mesh filename="package://my_gurdy_description/models/gurdy/meshes/gurdy_lowerleg.dae"/>
+            </geometry>
+        </visual>
+    </link>
+    <link name="footM1_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/> 
+            <geometry>
+                <sphere radius="0.008"/>
+            </geometry>
+        </visual>
+    </link>
+    <link name="upperleg_M2_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="1.579 0 0"/> 
+            <geometry>
+                <!--
+                <cylinder radius="0.0025" length="0.04"/>
+                -->
+                <mesh filename="package://my_gurdy_description/models/gurdy/meshes/gurdy_higherleg.dae"/>
+            </geometry>
+        </visual>
+    </link>
+    <link name="lowerleg_M2_link">
+        <visual>
+            <origin xyz="0 -0.015 0" rpy="1.579 0 3.14159"/> 
+            <geometry>
+                <!--
+                <cylinder radius="0.0025" length="0.04"/>
+                -->
+                <mesh filename="package://my_gurdy_description/models/gurdy/meshes/gurdy_lowerleg.dae"/>
+            </geometry>
+        </visual>
+    </link>
+    <link name="footM2_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/> 
+            <geometry>
+                <sphere radius="0.008"/>
+            </geometry>
+        </visual>
+    </link>
+    <link name="upperleg_M3_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="1.579 0 0"/> 
+            <geometry>
+                <!--
+                <cylinder radius="0.0025" length="0.04"/>
+                -->
+                <mesh filename="package://my_gurdy_description/models/gurdy/meshes/gurdy_higherleg.dae"/>
+            </geometry>
+        </visual>
+    </link>
+    <link name="lowerleg_M3_link">
+        <visual>
+            <origin xyz="0 -0.015 0" rpy="1.579 0 3.14159"/> 
+            <geometry>
+                <!--
+                <cylinder radius="0.0025" length="0.04"/>
+                -->
+                <mesh filename="package://my_gurdy_description/models/gurdy/meshes/gurdy_lowerleg.dae"/>
+            </geometry>
+        </visual>
+    </link>
+    <link name="footM3_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/> 
+            <geometry>
+                <sphere radius="0.008"/>
+            </geometry>
+        </visual>
+    </link>
+
     <!-- Dummy Link -->
-    <link name="link0" />
     <joint name="world_joint" type="fixed">
         <parent link="world" />
         <child link="base_link"/>
-        <origin xyz="0 0 0.025" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
         <axis xyz="0 0 1"/>
+    </joint>
+    <joint name="head_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="head_link"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+
+
+
+    <joint name="head_upperlegM1_joint" type="revolute">
+        <parent link="head_link" />
+        <child link="upperleg_M1_link"/>
+        <!-- It is not clear the directon of the rotation This nodes not
+             correspond with the  blueprint given in the quiz statement-->
+        <origin xyz="-0.02165 -0.0125 0.005" rpy="3.14159 0 -2.61799"/> 
+        <limit lower="-0.2" upper="0.2" effort="0.1" velocity="0.005"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+    <joint name="upperlegM1_lowerlegM1_joint" type="revolute">
+        <parent link="upperleg_M1_link" />
+        <child link="lowerleg_M1_link"/>
+        <!-- It is not clear the directon of the rotation This nodes not
+             correspond with the  blueprint given in the quiz statement-->
+        <origin xyz="0 0 0.06" rpy="0 0 0"/> 
+        <limit lower="-0.2" upper="0.2" effort="0.1" velocity="0.005"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+    <joint name="basefoot_peg_M1_basefoot_M1_joint_joint" type="fixed">
+        <parent link="lowerleg_M1_link" />
+        <child link="footM1_link"/>
+        <!-- It is not clear the directon of the rotation This nodes not
+             correspond with the  blueprint given in the quiz statement-->
+        <origin xyz="0 0 0.06" rpy="0 0 0"/> 
+    </joint>
+
+
+    <joint name="head_upperlegM2_joint" type="revolute">
+        <parent link="head_link" />
+        <child link="upperleg_M2_link"/>
+        <!-- It is not clear the directon of the rotation This nodes not
+             correspond with the  blueprint given in the quiz statement-->
+        <origin xyz="0.02165 -0.0125 0.005" rpy="3.14159 0 -0.523599"/> 
+        <limit lower="-0.2" upper="0.2" effort="0.1" velocity="0.005"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+    <joint name="upperlegM2_lowerlegM2_joint" type="revolute">
+        <parent link="upperleg_M2_link" />
+        <child link="lowerleg_M2_link"/>
+        <!-- It is not clear the directon of the rotation This nodes not
+             correspond with the  blueprint given in the quiz statement-->
+        <origin xyz="0 0 0.06" rpy="0 0 0"/> 
+        <limit lower="-0.2" upper="0.2" effort="0.1" velocity="0.005"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+    <joint name="basefoot_peg_M2_basefoot_M2_joint_joint" type="fixed">
+        <parent link="lowerleg_M2_link" />
+        <child link="footM2_link"/>
+        <!-- It is not clear the directon of the rotation This nodes not
+             correspond with the  blueprint given in the quiz statement-->
+        <origin xyz="0 0 0.06" rpy="0 0 0"/> 
+    </joint>
+    <joint name="head_upperlegM3_joint" type="revolute">
+        <parent link="head_link" />
+        <child link="upperleg_M3_link"/>
+        <!-- It is not clear the directon of the rotation This nodes not
+             correspond with the  blueprint given in the quiz statement-->
+        <origin xyz="0.0 0.0254 0.005" rpy="3.14159 0 1.579"/> 
+        <limit lower="-0.2" upper="0.2" effort="0.1" velocity="0.005"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+    <joint name="upperlegM3_lowerlegM3_joint" type="revolute">
+        <parent link="upperleg_M3_link" />
+        <child link="lowerleg_M3_link"/>
+        <!-- It is not clear the directon of the rotation This nodes not
+             correspond with the  blueprint given in the quiz statement-->
+        <origin xyz="0 0 0.06" rpy="0 0 0"/> 
+        <limit lower="-0.2" upper="0.2" effort="0.1" velocity="0.005"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+    <joint name="basefoot_peg_M3_basefoot_M3_joint_joint" type="fixed">
+        <parent link="lowerleg_M3_link" />
+        <child link="footM3_link"/>
+        <!-- It is not clear the directon of the rotation This nodes not
+             correspond with the  blueprint given in the quiz statement-->
+        <origin xyz="0 0 0.06" rpy="0 0 0"/> 
     </joint>
 </robot>
 
