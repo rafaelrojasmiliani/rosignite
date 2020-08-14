@@ -3,8 +3,4 @@
   <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
     output="screen" ns="/mira" args="roll_joint_position_controller pitch_joint_position_controller yaw_joint_position_controller joint_state_controller --shutdown-timeout 3"/>
 
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
-    respawn="false" output="screen">
-    <remap from="/joint_states" to="/mira/joint_states"/>
-  </node>
 </launch>
