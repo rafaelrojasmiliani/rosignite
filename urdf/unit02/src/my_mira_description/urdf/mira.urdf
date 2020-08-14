@@ -10,6 +10,9 @@
     <material name="green">
         <color rgba="0 0.8 0 1"/>
     </material>
+    <material name="gray">
+        <color rgba="0.7 0.7 0.7 1"/>
+    </material>
 
     <gazebo>
         <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
@@ -38,6 +41,7 @@
                 -->
                 <cylinder radius="0.06" length="0.09"/>
             </geometry>
+            <material name="gray"/>
         </visual>
 	</link>
 
@@ -196,7 +200,7 @@
                 <!--
                 <cylinder radius="0.06" length="0.035"/>
                 -->
-                <sphere radius="0.06"/>
+                <sphere radius="0.08"/>
             </geometry>
         </collision>
 		<visual>
@@ -205,6 +209,7 @@
                 <!--<mesh filename="package://my_mira_description/models/mira/meshes/mira_head_v5.dae"/>-->
                 <sphere radius="0.06"/>
             </geometry>
+            <material name="gray"/>
         </visual>
 	</link>
 
@@ -212,7 +217,7 @@
     <joint name="base_head_joint" type="fixed">
     	<parent link="yaw_M3_link"/>
     	<child link="head_link"/>
-    	<origin xyz="0 0 0" rpy="0 0 0"/>
+    	<origin xyz="0 0 0.04" rpy="0 0 0"/>
 	</joint>
 
     <link name="left_eye_link">
