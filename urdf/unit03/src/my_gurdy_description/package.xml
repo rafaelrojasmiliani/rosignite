@@ -2,7 +2,7 @@
 <package format="2">
   <name>my_gurdy_description</name>
   <version>0.0.0</version>
-  <description>The my_mira_description package</description>
+  <description>The urdf quiz package</description>
 
   <maintainer email="rafaelrojasmiliani@gmail.com">user</maintainer>
   <license>MIT</license>
