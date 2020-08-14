@@ -2,7 +2,7 @@
 <robot name="gurdy">
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <robotNamespace>/mira</robotNamespace>
+      <robotNamespace>/gurdy</robotNamespace>
     </plugin>
   </gazebo>
   <material name="gray">
