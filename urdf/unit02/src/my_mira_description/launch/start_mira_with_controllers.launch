@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
-    <arg name="urdf_robot_file" default="" />
-    <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-        args="-urdf -x 0 -y 0 -z 0  -model mira  -file $(find my_mira_description)/urdf/mira.urdf"/>
-
-    <rosparam command="load" file="$(find my_mira_description)/config/mira_control.yaml"/>
-
-  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-    output="screen" ns="/mira" args="roll_joint_position_controller pitch_joint_position_controller yaw_joint_position_controller joint_state_controller --shutdown-timeout 3"/>
+    <include file="$(find my_mira_description)/launch/spawn_mira_with_controllers.launch"/>
+    <include file="$(find my_mira_description)/launch/mira_control.launch"/>
 </launch>
