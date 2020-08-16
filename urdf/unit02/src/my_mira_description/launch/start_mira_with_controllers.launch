@@ -2,7 +2,7 @@
 <launch>
     <arg name="urdf_robot_file" default="" />
     <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-        args="-urdf -x 0 -y 0 -z 0  -model mira  -file $(find my_mira_description)/urdf/mira.yaml"/>
+        args="-urdf -x 0 -y 0 -z 0  -model mira  -file $(find my_mira_description)/urdf/mira_control.yaml"/>
 
     <rosparam command="load" file="$(find my_mira_description)/config/mira_control.yaml"/>
 
