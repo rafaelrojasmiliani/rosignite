@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
+    <include file="$(find my_gurdy_description)/launch/copy_files.launch"/>
+    <param name="robot_description" command="cat $(find my_gurdy_description)/urdf/gurdy.urdf"/>
     <arg name="x" default="0.0" />
     <arg name="y" default="0.0" />
     <arg name="z" default="0.0" />
-    <!--Copy the Gurdy stl files into the required folder-->
-    <include file="$(find my_gurdy_description)/launch/copy_files.launch"/>
-    <!--Assign to /robot_description ros paramenter the content of the gurdy.urdf file-->
-    <param name="robot_description" command="cat $(find my_gurdy_description)/urdf/gurdy.urdf"/>
 
-    <!--Spawn into gazebo the content of /robot_description-->
     <node name="gazebo_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" 
         args="-urdf -x $(arg x) -y $(arg y) -z $(arg z)  -model gurdy -param robot_description" output="screen"/>
 
-    <!--Load into the ros paramenters the configuration of the controllers instantiated into gurdy.urdf-->
     <rosparam file="$(find my_gurdy_description)/config/gurdy_control.yaml" command="load"/>
 
-    <!--controller_spawner will take the values of the paramenter server and instantiate the controller representation of gazebo-->
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
         output="screen" ns="/gurdy" args="joint_state_controller head_upperlegM1_joint_controller upperlegM1_lowerlegM1_joint_controller head_upperlegM2_joint_controller upperlegM2_lowerlegM2_joint_controller head_upperlegM3_joint_controller upperlegM3_lowerlegM3_joint_controller --shutdown-timeout 3"/>
 
@@ -23,4 +18,6 @@
     respawn="false" output="screen">
     <remap from="/joint_states" to="/gurdy/joint_states" />
   </node>
+ 
+
 </launch>
