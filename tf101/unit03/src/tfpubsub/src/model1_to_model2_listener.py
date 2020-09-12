@@ -37,7 +37,10 @@ class cTfSubscriber:
                     self.stalker_frame_, self.victim_frame_, rospy.Time(0))
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 continue
-
+            print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+            print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+            print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+            print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
             angular = 4 * math.atan2(trans[1], trans[0])
             linear = 0.5 * math.sqrt(trans[0] ** 2 + trans[1] ** 2)
             cmd = geometry_msgs.msg.Twist()
