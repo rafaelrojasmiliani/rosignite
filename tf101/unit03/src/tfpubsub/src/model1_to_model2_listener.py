@@ -17,7 +17,7 @@ class cTfSubscriber:
         self.ctrl_c_ = False
 
         self.staker_vel_pub_ = rospy.Publisher(
-            _stalker+'/cmd_vel', geometry_msgs.msg.Twist, queue_size=1)
+            '/'+_stalker+'/cmd_vel', geometry_msgs.msg.Twist, queue_size=1)
 
         self.rate_ = rospy.Rate(10.0)
         rospy.on_shutdown(self.shutdownhook)
