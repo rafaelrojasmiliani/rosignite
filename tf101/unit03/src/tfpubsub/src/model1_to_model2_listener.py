@@ -8,27 +8,19 @@ import geometry_msgs.msg
 
 class cTfSubscriber:
     def __init__(self, _stalker, _victim):
-        print('----- subscriver constructed ---------------')
         rospy.init_node('tf_listener_turtle')
-        print('----- subscriver constructed ---------------')
         self.tf_lister_ = tf.TransformListener()
-        print('----- subscriver constructed ---------------')
         self.stalker_ = _stalker
-        print('----- subscriver constructed ---------------')
         self.stalker_frame_ = '/'+_stalker
-        print('----- subscriver constructed ---------------')
         self.victim_ = _victim
-        print('----- subscriver constructed ---------------')
         self.victim_frame_ = '/'+_victim
-        print('----- subscriver constructed ---------------')
         self.ctrl_c_ = False
 
         self.staker_vel_pub_ = rospy.Publisher(
-            '/'+_stalker+'/cmd_vel', geometry_msgs.msg.Twist, queue_size=1)
+            _stalker+'/cmd_vel', geometry_msgs.msg.Twist, queue_size=1)
 
         self.rate_ = rospy.Rate(10.0)
         rospy.on_shutdown(self.shutdownhook)
-        print('----- subscriver constructed ---------------')
         
     def shutdownhook(self):
         print "shutdown time! Stop the robot"
@@ -55,8 +47,6 @@ class cTfSubscriber:
             rate.sleep()
 
 def main(*argv):
-    print('-----------main----------')
-    import pdb; pdb.set_trace()
     argv=argv[1:3]
     subs = cTfSubscriber(*argv)
     subs.spin()
