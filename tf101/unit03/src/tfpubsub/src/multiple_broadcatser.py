@@ -13,7 +13,7 @@ class cTfPulbisher:
         self.name_list_ = _name_list
         self.gzb_models_ = GazeboModel(_name_list)
 
-    def spin():
+    def spin(self):
 
         for robot_name in self.name_list_:
             pose_now = self.gzb_models_.get_model_pose(robot_name)
