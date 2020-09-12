@@ -29,7 +29,7 @@ class cTfSubscriber:
         cmd = geometry_msgs.msg.Twist()
         cmd.linear.x = 0.0
         cmd.angular.z = 0.0
-        turtle_vel.publish(cmd)
+        self.staker_vel_pub_.publish(cmd)
         self.ctrl_c_ = True
 
     def spin(self):
@@ -37,14 +37,14 @@ class cTfSubscriber:
             try:
                 (trans, rot) = self.tf_lister_.lookupTransform(
                     self.stalker_frame_, self.victim_frame_, rospy.Time(0))
+                angular = 4 * math.atan2(trans[1], trans[0])
+                linear = 0.5 * math.sqrt(trans[0] ** 2 + trans[1] ** 2)
+                cmd = geometry_msgs.msg.Twist()
+                cmd.linear.x = linear
+                cmd.angular.z = angular
+                self.staker_vel_pub_.publish(cmd)
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 continue
-            angular = 4 * math.atan2(trans[1], trans[0])
-            linear = 0.5 * math.sqrt(trans[0] ** 2 + trans[1] ** 2)
-            cmd = geometry_msgs.msg.Twist()
-            cmd.linear.x = linear
-            cmd.angular.z = angular
-            self.staker_vel_pub_.publish(cmd)
 
             rate.sleep()
 
