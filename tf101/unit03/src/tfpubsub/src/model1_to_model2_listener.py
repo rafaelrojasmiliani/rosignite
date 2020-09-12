@@ -49,8 +49,7 @@ class cTfSubscriber:
             rate.sleep()
 
 def main(*argv):
-    argv=argv[1:3]
-    print(argv)
+    argv=argv[0:2]
     subs = cTfSubscriber(*argv)
     subs.spin()
 
