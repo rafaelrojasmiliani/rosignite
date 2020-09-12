@@ -21,6 +21,7 @@ class cTfSubscriber:
 
         self.rate_ = rospy.Rate(10.0)
         rospy.on_shutdown(self.shutdownhook)
+        print('----- subscriver constructed ---------------')
         
     def shutdownhook(self):
         print "shutdown time! Stop the robot"
