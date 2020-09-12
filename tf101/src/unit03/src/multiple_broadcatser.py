@@ -6,4 +6,41 @@ from turtle_tf_3d.get_model_gazebo_pose import GazeboModel
 
 
 class cTfPulbisher:
-    pass
+    def __init__(self, _name_list):
+        self.tfbr_ = tf.TransformBroadcaster()
+        self.rate_ = rospy.Rate(5)
+        self.name_list_ = namelist
+        self.gzb_models_ = GazeboModel(_name_list)
+
+    def spin():
+        rospy.init_node('publisher_of_tf_node', anonymous=True)
+
+        for robot_name in self.name_list_:
+            pose_now = self.gzb_models_.get_model_pose(robot_name)
+
+        while not rospy.is_shutdown():
+            for robot_name in self.name_list_:
+                pose_now = self.gzb_models_.get_model_pose(robot_name)
+                if pose_now:
+                    pos = [getattr(pose_now.position, component)
+                           for component in 'xyz']
+                    ori = [getattr(pose_now.orientation, component)
+                           for component in 'xyzw']
+                    br.sendTransform(pos,
+                                     ori,
+                                     rospy.Time.now(),
+                                     robot_name,
+                                     "/world")
+        rate.sleep()
+
+
+def main():
+    robot_name_list = ["turtle1", "turtle2"]
+
+    tfpub = cTfPulbisher(robot_name_list)
+
+    tfpub.spin()
+
+
+if __name__ == '__main__':
+    main()
