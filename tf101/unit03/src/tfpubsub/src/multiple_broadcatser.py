@@ -10,7 +10,7 @@ class cTfPulbisher:
         rospy.init_node('publisher_of_tf_node', anonymous=True)
         self.tfbr_ = tf.TransformBroadcaster()
         self.rate_ = rospy.Rate(5)
-        self.name_list_ = namelist
+        self.name_list_ = _name_list
         self.gzb_models_ = GazeboModel(_name_list)
 
     def spin():
