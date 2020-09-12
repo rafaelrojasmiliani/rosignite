@@ -8,12 +8,19 @@ import geometry_msgs.msg
 
 class cTfSubscriber:
     def __init__(self, _stalker, _victim):
+        print('----- subscriver constructed ---------------')
         rospy.init_node('tf_listener_turtle')
+        print('----- subscriver constructed ---------------')
         self.tf_lister_ = tf.TransformListener()
+        print('----- subscriver constructed ---------------')
         self.stalker_ = _stalker
+        print('----- subscriver constructed ---------------')
         self.stalker_frame_ = '/'+_stalker
+        print('----- subscriver constructed ---------------')
         self.victim_ = _victim
+        print('----- subscriver constructed ---------------')
         self.victim_frame_ = '/'+_victim
+        print('----- subscriver constructed ---------------')
         self.ctrl_c_ = False
 
         self.staker_vel_pub_ = rospy.Publisher(
