@@ -57,6 +57,7 @@ class cTfSubscriber:
 def main(*argv):
     print('-----------main----------')
     import pdb; pdb.set_trace()
+    argv=argv[1:3]
     subs = cTfSubscriber(*argv)
     subs.spin()
 
