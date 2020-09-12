@@ -46,7 +46,7 @@ class cTfSubscriber:
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 continue
 
-            rate.sleep()
+            self.rate_.sleep()
 
 def main(*argv):
     argv=argv[0:2]
