@@ -26,7 +26,7 @@ class cTfPulbisher:
                            for component in 'xyz']
                     ori = [getattr(pose_now.orientation, component)
                            for component in 'xyzw']
-                    br.sendTransform(pos,
+                    self.tfbr_.sendTransform(pos,
                                      ori,
                                      rospy.Time.now(),
                                      robot_name,
