@@ -50,6 +50,9 @@ class cTfSubscriber:
 
 def main(*argv):
     argv=argv[0:2]
+    print('-------------')
+    print(argv)
+    print('-------------')
     subs = cTfSubscriber(*argv)
     subs.spin()
 

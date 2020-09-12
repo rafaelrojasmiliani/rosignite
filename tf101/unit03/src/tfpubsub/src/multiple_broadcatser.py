@@ -35,7 +35,7 @@ class cTfPulbisher:
 
 
 def main():
-    robot_name_list = ["turtle1", "turtle2", "coke_can"]
+    robot_name_list = ["/turtle1", "/turtle2", "/coke_can"]
 
     tfpub = cTfPulbisher(robot_name_list)
 
