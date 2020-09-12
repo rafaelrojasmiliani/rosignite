@@ -31,7 +31,7 @@ class cTfPulbisher:
                                      rospy.Time.now(),
                                      robot_name,
                                      "/world")
-        rate.sleep()
+        self.rate_.sleep()
 
 
 def main():
