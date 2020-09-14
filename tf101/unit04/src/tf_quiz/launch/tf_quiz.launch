@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+  <rosparam file="$(find tf_quiz)/config/pi_robot_control.yaml" command="load"/>
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/pi_robot" args="head_pan_joint_controller head_tilt_joint_controller torso_joint_controller left_shoulder_forward_joint_controller right_shoulder_forward_joint_controller left_shoulder_up_joint_controller right_shoulder_up_joint_controller left_elbow_joint_controller right_elbow_joint_controller left_wrist_joint_controller right_wrist_joint_controller joint_state_controller --shutdown-timeout 3"/>
+  <group ns="/pi_robot">
+    <param name="robot_description" command="cat $(find pi_robot_pkg)/urdf/pi_robot_v2.urdf"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+      <remap from="/joint_states" to="/pi_robot/joint_states"/>
+    </node>
+  </group>
+</launch>
