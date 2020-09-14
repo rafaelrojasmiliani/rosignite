@@ -1,0 +1,7 @@
+<launch>
+    <param name="robot_description" command="cat cat $(find pi_robot_pkg)/urdf/pi_robot_v2.urdf"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+    respawn="false" output="screen">
+    <remap from="/joint_states" to="/pi_robot/joint_states" />
+    </node>
+</launch>
