@@ -1,4 +1,0 @@
-<launch>
-<node name="publisher" pkg="tfpubsub" type="multiple_broadcatser.py" output="screen"/>
-<node name="subscriber" pkg="tfpubsub" type="model1_to_model2_listener.py" output="screen" args="turtle1 turtle2"/>
-</launch>
