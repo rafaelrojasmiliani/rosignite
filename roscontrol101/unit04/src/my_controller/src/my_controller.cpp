@@ -26,10 +26,10 @@ namespace controller_ns {
 class PositionController : public controller_interface::Controller<
                                hardware_interface::EffortJointInterface> {
 public:
-  PositionController()
-      : controller_interface::Controller<
-            hardware_interface::EffortJointInterface>(),
-        gain_(2.25), setpoint_(1.0) {}
+  //  PositionController()
+  //      : controller_interface::Controller<
+  //            hardware_interface::EffortJointInterface>(),
+  //        gain_(2.25), setpoint_(1.0) {}
   /** \brief The init function is called to initialize the controller from a
    * non-realtime thread with a pointer to the hardware interface, itself,
    * instead of a pointer to a RobotHW.
@@ -85,8 +85,8 @@ public:
 
 private:
   hardware_interface::JointHandle joint_;
-  double gain_;
-  double setpoint_;
+  const double gain_ = 2.25;
+  const double setpoint_ = 1.00;
 };
 PLUGINLIB_EXPORT_CLASS(controller_ns::PositionController,
                        controller_interface::ControllerBase);
