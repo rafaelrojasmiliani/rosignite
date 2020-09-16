@@ -69,7 +69,7 @@ public:
    * \param time The current time
    * \param period The time passed since the last call to \ref update
    */
-  void update(const ros::Time &_time, const ros::Duration &_period) {
+  void update(const ros::Time & /*_time*/, const ros::Duration & /*_period */) {
     double error = this->setpoint_ - this->joint_.getPosition();
     this->joint_.setCommand(error * this->gain_);
   }
@@ -80,8 +80,8 @@ public:
    *
    * \param time The current time
    */
-  void starting(const ros::Time &time) {}
-  void stopping(const ros::Time &time) {}
+  //  void starting(const ros::Time) {}
+  //  void stopping(const ros::Time) {}
 
 private:
   hardware_interface::JointHandle joint_;
