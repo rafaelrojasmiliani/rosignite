@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+  <node name="gazebo" pkg="gazebo_ros" type="gazebo"/>
+  <group ns="/ur5">
+    <param name="robot_description" command="$(find xacro)/xacro $(find ur_description)/urdf/ur5_robot.urdf.xacro"/>
+    <node name="gazebo_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" args="-urdf -z 0.1 -model ur5 -param robot_description" output="screen"/>
+  </group>
+</launch>
