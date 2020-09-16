@@ -85,8 +85,8 @@ public:
 
 private:
   hardware_interface::JointHandle joint_;
-  const double gain_ = 2.25;
-  const double setpoint_ = 1.00;
+  static const double gain_ = 2.25;
+  static const double setpoint_ = 1.00;
 };
 PLUGINLIB_EXPORT_CLASS(controller_ns::PositionController,
                        controller_interface::ControllerBase);
