@@ -85,8 +85,8 @@ public:
 
 private:
   hardware_interface::JointHandle joint_;
-  double gain_ = 2.25;
-  double setpoint_ = 1.00;
+  double gain_;
+  double setpoint_;
 };
 PLUGINLIB_EXPORT_CLASS(controller_ns::PositionController,
                        controller_interface::ControllerBase);
