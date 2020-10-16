@@ -2,7 +2,6 @@
 # in order to be ahble to test this library
 FROM nvidia/cudagl:10.0-base-ubuntu18.04
 
-# base packages
 
 ENV TZ=Europe/Rome
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -11,9 +10,9 @@ RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $UBUNTU_RELEASE main" > 
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 RUN apt-get update
 
-# Install numpy and scipy
+# Install packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends -o Dpkg::Options::="--force-confnew" \
-                    ros-melodic-desktop-full ros-melodic-moveit-setup-assistant iputils-ping net-tools netcat
+                    ros-melodic-desktop-full ros-melodic-moveit-setup-assistant iputils-ping net-tools netcat screen build-essential
 # user handling
 ARG myuser
 ARG myuid
@@ -24,5 +23,8 @@ RUN addgroup --gid ${mygid} ${mygroup}
 RUN adduser --gecos "" --disabled-password  --uid ${myuid} --gid ${mygid} ${myuser}
 #add user to sudoers
 RUN echo "${myuser} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-WORKDIR  /test
-RUN chown ${myuser}:${mygroup} /test
+RUN echo "source /opt/ros/melodic/setup.bash" >> /etc/bash.bashrc
+WORKDIR /
+
+
+COPY ./configfiles/screenrc /root/.screenrc
