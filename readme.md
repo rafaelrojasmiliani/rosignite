@@ -13,7 +13,7 @@ For each unit it corresponds a catkin directory.
 
 # Docker
 
-I have created a docker file aimed to create an image with most of the required ros packages.
+I have created a docker file aimed to create an image with most of the required ROS packages.
 It uses `nvidia-docker`.
 
 ## How to build the image
@@ -23,3 +23,13 @@ To create the image run `docker/build_image.sh`.
 ## How to run the container
 The script `docker/container-start.bash` starts an interactive bash in the container with the root user.
 This script mounts a volume with this repository at `/catkinws`.
+
+
+# How to launch a .lauch
+
+To launch a launch-file you need follow these steps
+    1. Build the docker image `cd docker && bash build_image.sh`
+    2. Run the docker container `cd docker && bash container-start.bash`
+    3. Go to the desired unit catkin workspace `cd course/unit`
+    4. Run `catkin_make` and `source devel/setup.bash`
+    6. Launch the desired launch-file `roslaunch rospackage launchfile.launch`
