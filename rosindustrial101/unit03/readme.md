@@ -54,7 +54,6 @@ In this tab we must define a joint by indicating
 - Joint type
 
 4. Create a planning group
-
 Planning groups are used for semantically describing different parts of your robot, such as defining what an arm is, or an end effector.
 
     1. Click on Add Group and you should see a new screen
