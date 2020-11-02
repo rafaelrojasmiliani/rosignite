@@ -84,7 +84,17 @@ All generated files will go directly into the directory you have chosen.
 
 ## Combining MoveIt with Gazebo using RosControl
 
-- Inside the config folder of your moveit package, create a new file named `controllers.yaml`. Copy the following content inside it: 
+The ROS ignite accademy has in its we interface a Gazebo node running by default.
+In this module it automatically loads a sia robot.
+
+| launch file | scope | is it created by moveIt setup |
+| ----------- | ---------- | ------------------------ |
+| `myrobot_moveit_controller_manager.launch.xml` | loads `controllers.yaml` and set the parameters `use_controller_manager`, `trajectory_execution/execution_duration_monitoring` and `moveit_controller_manager` | YES |
+`myrobot_planning_execution.launch` | loads `joint_names.yaml`, launches `$(find myrobot_moveit_config)/launch/planning_context.launch`, launches a joint state publisher with `/source_list=[/sia10f/joint_states]`, launches `$(find myrobot_moveit_config)/launch/move_group.launch`, and `"$(find myrobot_moveit_config)/launch/moveit_rviz.launch` | NO |
+
+
+1. Inside the config folder of your moveit package, create a new file named `controllers.yaml`. 
+Copy the following content inside it: 
 ```
 controller_list:
   - name: sia10f/joint_trajectory_controller
@@ -93,6 +103,49 @@ controller_list:
     joints: [joint_s, joint_l, joint_e, joint_u, joint_r, joint_b, joint_t]
 ```
 
+2. Next, you'll have to create a file to define the names of the joints of your robot. 
+Again inside the config directory, create a new file called `joint_names.yaml`, and copy the following content in it:
+```
+controller_joint_names: [joint_s, joint_l, joint_e, joint_u, joint_r, joint_b, joint_t]
+```
+
+3. Now, if you open the `myrobot_moveit_controller_manager.launch.xml`, which is inside the launch directory, you'll see that it's empty. 
+Put the next content inside it:
+```
+<launch>
+  <rosparam file="$(find myrobot_moveit_config)/config/controllers.yaml"/>
+  <param name="use_controller_manager" value="false"/>
+  <param name="trajectory_execution/execution_duration_monitoring" value="false"/>
+  <param name="moveit_controller_manager" value="moveit_simple_controller_manager/MoveItSimpleControllerManager"/>
+</launch>
+```
+
+4. Finally, you will have to create a new launch file that sets up all the system to control your robot. 
+So, inside the launch directory, create a new launch file `myrobot_planning_execution.launch`.
+```
+<launch>
+
+  <rosparam command="load" file="$(find myrobot_moveit_config)/config/joint_names.yaml"/>
+
+  <include file="$(find myrobot_moveit_config)/launch/planning_context.launch" >
+    <arg name="load_robot_description" value="true" />
+  </include>
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="/use_gui" value="false"/>
+    <rosparam param="/source_list">[/sia10f/joint_states]</rosparam>
+  </node>
+
+  <include file="$(find myrobot_moveit_config)/launch/move_group.launch">
+    <arg name="publish_monitored_planning_scene" value="true" />
+  </include>
+
+  <include file="$(find myrobot_moveit_config)/launch/moveit_rviz.launch">
+    <arg name="config" value="true"/>
+  </include>
+
+</launch>
+```
 ## Ros packages and launch files
 
 - `my_robot_description` Contains a URDF description of a robot into a workspace
@@ -103,7 +156,7 @@ controller_list:
     - `planning_context.launch` loads the URDF and other data (as the one in `config/*.yaml`) into the ROS parameter server
     - `planning_pipeline.launch`: launch other launch files to setup OMPL (open motion planning library).
     - `trajectory_execution.launch` 
-    - `pkg_name_moveit_controller_manager.launch` 
+    - `myrobot_moveit_controller_manager.launch.xml`
     - `sensor_manaer.launch` 
     - `move_group.launch` 
     - `demo.lauch` runs a MoveIt demo for the created moveit configuration package.
