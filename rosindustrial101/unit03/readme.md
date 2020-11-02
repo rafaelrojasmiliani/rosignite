@@ -84,7 +84,7 @@ All generated files will go directly into the directory you have chosen.
 
 ## Combining MoveIt with Gazebo using RosControl
 
-- Inside the config folder of your moveit package, create a new file named controllers.yaml. Copy the following content inside it: 
+- Inside the config folder of your moveit package, create a new file named `controllers.yaml`. Copy the following content inside it: 
 ```
 controller_list:
   - name: sia10f/joint_trajectory_controller
@@ -92,3 +92,20 @@ controller_list:
     type: FollowJointTrajectory
     joints: [joint_s, joint_l, joint_e, joint_u, joint_r, joint_b, joint_t]
 ```
+
+## Ros packages and launch files
+
+- `my_robot_description` Contains a URDF description of a robot into a workspace
+    - `my_robot.launch`: loads sia robot into a workspace URDF description into `/sia/robot_description`
+    - `my_robot_ur.launch`: loads a Universal Robots UR5 robot into a workspace URDF description into `/sia/robot_description`
+
+- `myrobot_moveit_config` MoveIt configuration package
+    - `planning_context.launch` loads the URDF and other data (as the one in `config/*.yaml`) into the ROS parameter server
+    - `planning_pipeline.launch`: launch other launch files to setup OMPL (open motion planning library).
+    - `trajectory_execution.launch` 
+    - `pkg_name_moveit_controller_manager.launch` 
+    - `sensor_manaer.launch` 
+    - `move_group.launch` 
+    - `demo.lauch` runs a MoveIt demo for the created moveit configuration package.
+
+
