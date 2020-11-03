@@ -218,6 +218,8 @@ So, inside the launch directory, create a new launch file `myrobot_planning_exec
 </launch>
 ```
 
+The launch file
+
 ## Ros packages and launch files
 
 - `my_robot_description` Contains a URDF description of a robot into a workspace
