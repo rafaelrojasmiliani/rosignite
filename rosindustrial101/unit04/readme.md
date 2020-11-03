@@ -1,4 +1,4 @@
-# Build a MoveIt Package
+# Motion Planning with Python
 
 In this unit we learn to build a moveIt package with the movit assistant wizard.
 
