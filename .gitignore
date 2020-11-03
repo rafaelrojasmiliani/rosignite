@@ -8,8 +8,8 @@ roscontrol101/unit03/src/CMakeLists.txt
 roscontrol101/unit04/src/CMakeLists.txt
 roscontrol101/unit05/src/CMakeLists.txt
 rosindustrial101/unit02/src/CMakeLists.txt
-rosindustrial101/unit02/src/sia10f_decription/*
-rosindustrial101/unit03/src/sia10f_decription/*
+rosindustrial101/unit02/src/sia10f_description/*
+rosindustrial101/unit03/src/sia10f_description/*
 rosindustrial101/unit03/src/CMakeLists.txt
 rosindustrial101/unit04/src/CMakeLists.txt
 rosindustrial101/unit05/src/CMakeLists.txt

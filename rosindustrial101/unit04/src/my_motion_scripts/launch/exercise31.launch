@@ -1,4 +1,4 @@
 <launch>
     <include file="$(find myrobot_moveit_config)/launch/myrobot_planning_execution.launch"/>
-    <node name="planning_script" pkg="my_motion_scripts" type="planning_script" output="screen"/>
+    <node name="planning_script" pkg="my_motion_scripts" type="planning_script.py" output="screen"/>
 </launch>
