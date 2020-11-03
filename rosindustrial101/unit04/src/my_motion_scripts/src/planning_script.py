@@ -16,7 +16,9 @@ def main():
     scene = moveit_commander.PlanningSceneInterface()
     group = moveit_commander.MoveGroupCommander("manipulator")
     display_trajectory_publisher = rospy.Publisher(
-        '/move_group/display_planned_path', moveit_msgs.msg.DisplayTrajectory)
+        '/move_group/display_planned_path',
+        moveit_msgs.msg.DisplayTrajectory,
+        queue_size=3)
 
     pose_target = geometry_msgs.msg.Pose()
     pose_target.orientation.w = 1.0
