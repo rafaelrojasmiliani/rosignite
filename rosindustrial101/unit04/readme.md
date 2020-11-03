@@ -14,10 +14,31 @@ This requires the launch file `myrobot_planning_execution.launch`
 2. Implementation of **MoveIt**  in python
 
 
-## Definitions
+## move\_commander interface
 
 The **moveit\_commander** Python package offers wrappers for the functionality provided in MoveIt!.
 The `moveit_commander` package also includes a command line interface, `moveit_commander_cmdline.py`.
+The github code is available [here](https://github.com/ros-planning/moveit/tree/master/moveit_commander).
+
+`moveit_commander` has the following modules
+
+| module name | description |
+| ----------- | ----------- |
+|`exception`  | declares a default exception for this module |
+|`roscpp_initializer ` | wrapper for `_moveit_roscpp_initializer` [implemented here](https://github.com/ros-planning/moveit/blob/cf218879dbc23aadf88dd56b8abe7970b7d61030/moveit_ros/planning_interface/py_bindings_tools/src/roscpp_initializer.cpp#L127) |
+|`planning_scene_interface ` | wrapper for `_moveit_planning_scene_interface` [implemented here](https://github.com/ros-planning/moveit/blob/cf218879dbc23aadf88dd56b8abe7970b7d61030/moveit_ros/planning_interface/planning_scene_interface/src/planning_scene_interface.cpp#L50)|
+|`move_group ` | wrapper for `_moveit_move_group_interface` [implemented here](https://github.com/ros-planning/moveit/blob/cf218879dbc23aadf88dd56b8abe7970b7d61030/moveit_ros/planning_interface/move_group_interface/src/move_group_interface.cpp#L93) |
+|`robot ` | wrapper for `_moveit_robot_interface` [implemented here](https://github.com/ros-planning/moveit/blob/cf218879dbc23aadf88dd56b8abe7970b7d61030/moveit_ros/planning_interface/robot_interface/src/wrap_python_robot_interface.cpp#L57) |
+|`interpreter ` | implements the class `MoveGroupCommandInterpreter` to translate simple commands |
+
+
+All the modules in `moveit_commander` make reference to the python package `moveit_ros_planning_interface`. This is an empty python package which contains the following cpython modules
+- `_moveit_roscpp_initializer`: code in `moveit/moveit_ros/planning_interface/py_bindings_tools/`
+    - `moveit_commander.roscpp_initialize(sys.argv)` runs an async roscpp spinner as in [here](https://github.com/ros-planning/moveit/blob/cf218879dbc23aadf88dd56b8abe7970b7d61030/moveit_ros/planning_interface/py_bindings_tools/src/roscpp_initializer.cpp#L127)
+- `_moveit_move_group_interface`
+- `_moveit_planning_scene_interface`
+- `_moveit_robot_interface`
+
 
 
 ## Procedure
