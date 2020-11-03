@@ -8,7 +8,7 @@
 
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <param name="/use_gui" value="false"/>
-    <rosparam param="source_list">[/sia10f/joint_states]</rosparam>
+    <rosparam param="/source_list">[/sia10f/joint_states]</rosparam>
   </node>
 
   <include file="$(find myrobot_moveit_config)/launch/move_group.launch">
@@ -16,7 +16,7 @@
   </include>
 
   <include file="$(find myrobot_moveit_config)/launch/moveit_rviz.launch">
-    <arg name="config" value="true"/>
+      <arg name="rviz_config" value="$(find myrobot_moveit_config)/config/myrobot_rviz_config.rviz"/>
   </include>
 
 </launch>
