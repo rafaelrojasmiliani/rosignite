@@ -15,6 +15,67 @@ Tasks
 - **MoveIt configuration package**
 
 - **MoveIt move group** It provides an interface for most operations that a user may want to carry out, specifically setting joint or pose goals, creating motion plans, moving the robot, adding objects into the environment and attaching/detaching objects from the robot. This interface communicates over ROS topics, services, and actions to the **MoveGroup Node**.
+The figure above shows the high-level system architecture for the primary node provided by MoveIt called `move_group`. 
+This node serves as an integrator: pulling all the individual components together to provide a set of ROS actions and services for users to use.
+a move group runs a `FollowJointTrajectoryAction`
+
+The `move_group` type of node is defined in [moveit\_ros/move\_group/src/move\_group.cpp](https://github.com/ros-planning/moveit_ros/blob/kinetic-devel/move_group/src/move_group.cpp).
+In this file the clas `MoveGroupExe` is created. 
+The `main` of this node is [here](https://github.com/ros-planning/moveit_ros/blob/200ff00b2cad2c49811991b3af64cab5eb19f6fb/move_group/src/move_group.cpp#L148)
+```
+int main(int argc, char **argv)
+{
+  ros::init(argc, argv, move_group::NODE_NAME);
+
+  ros::AsyncSpinner spinner(1);
+  spinner.start();
+
+  // create a shared point to a transform listener
+  boost::shared_ptr<tf::TransformListener> tf(new tf::TransformListener(ros::Duration(10.0)));
+  // create planning_scene_monitor pointer
+  planning_scene_monitor::PlanningSceneMonitorPtr 
+    planning_scene_monitor(new planning_scene_monitor::PlanningSceneMonitor(ROBOT_DESCRIPTION, tf));
+
+  if (planning_scene_monitor->getPlanningScene())
+  {
+      // debug parameters setup
+      // ...
+      // debug parameters setup
+    planning_scene_monitor->startSceneMonitor();
+    planning_scene_monitor->startWorldGeometryMonitor();
+    planning_scene_monitor->startStateMonitor();
+
+    move_group::MoveGroupExe mge(planning_scene_monitor, debug);
+
+    planning_scene_monitor->publishDebugInformation(debug);
+
+    mge.status();
+
+    ros::waitForShutdown();
+  }
+  else
+    ROS_ERROR("Planning scene not configured");
+
+  return 0;
+}
+```
+
+1. Instantiate a transform listener `tf` with `boost::shared_ptr<tf::TransformListener> tf(new tf::TransformListener(ros::Duration(10.0)));`
+
+2. Instantiate a Planning scene monitor instance `planning_scene_monitor` with `planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor(new planning_scene_monitor::PlanningSceneMonitor(ROBOT_DESCRIPTION, tf));`
+
+3. `planning_scene_monitor->startSceneMonitor();`
+    
+4. `planning_scene_monitor->startWorldGeometryMonitor();`
+    
+5. `planning_scene_monitor->startStateMonitor();`
+
+6. Instantiate an instance of `move_group::MoveGroupExe`  claled `mge` with `move_group::MoveGroupExe mge(planning_scene_monitor, debug);`.
+This instance is a container of the "capabilities of move\_group".
+    1. Crates a `MoveGroupContext` instance and store it in the `MoveGroupContextPtr` variable using its `MoveGroupContextPtr::reset` method.
+    2. Call `MoveGroupExe::configureCapabilities();` This function will load the capabilities presented in the ROS parameter "capabilities". These capabilities are loaded as pluging using the loader `pluginlib::ClassLoader<MoveGroupCapability>` and stored in `MoveGroupExe::capabilities_`.
+
+7. Calls `MoveGroupExe::status` with `mge.status()`. This funcions only print the status, if `mge.capabilities_.empty()` is false it prints "You can start planning now!".
 
 
 
@@ -87,7 +148,14 @@ All generated files will go directly into the directory you have chosen.
 The ROS ignite accademy has in its we interface a Gazebo node running by default.
 In this module it automatically loads a sia robot.
 
-| launch file | scope | is it created by moveIt setup |
+| yaml file | scope | is it created by moveIt setup? |
+| ----------- | ---------- | ------------------------ |
+| `controllers.yaml` | set ros parameters | YES |
+`myrobot_planning_execution.launch` | loads `joint_names.yaml`, launches `$(find myrobot_moveit_config)/launch/planning_context.launch`, launches a joint state publisher with `/source_list=[/sia10f/joint_states]`, launches `$(find myrobot_moveit_config)/launch/move_group.launch`, and `"$(find myrobot_moveit_config)/launch/moveit_rviz.launch` | NO |
+
+
+
+| launch file | scope | is it created by moveIt setup? |
 | ----------- | ---------- | ------------------------ |
 | `myrobot_moveit_controller_manager.launch.xml` | loads `controllers.yaml` and set the parameters `use_controller_manager`, `trajectory_execution/execution_duration_monitoring` and `moveit_controller_manager` | YES |
 `myrobot_planning_execution.launch` | loads `joint_names.yaml`, launches `$(find myrobot_moveit_config)/launch/planning_context.launch`, launches a joint state publisher with `/source_list=[/sia10f/joint_states]`, launches `$(find myrobot_moveit_config)/launch/move_group.launch`, and `"$(find myrobot_moveit_config)/launch/moveit_rviz.launch` | NO |
@@ -146,6 +214,7 @@ So, inside the launch directory, create a new launch file `myrobot_planning_exec
 
 </launch>
 ```
+
 ## Ros packages and launch files
 
 - `my_robot_description` Contains a URDF description of a robot into a workspace
@@ -159,6 +228,9 @@ So, inside the launch directory, create a new launch file `myrobot_planning_exec
     - `myrobot_moveit_controller_manager.launch.xml`
     - `sensor_manaer.launch` 
     - `move_group.launch` 
+```
+    <node name="move_group" launch-prefix="$(arg launch_prefix)" pkg="moveit_ros_move_group" type="move_group" respawn="false" output="screen" args="$(arg command_args)"/>
+```
     - `demo.lauch` runs a MoveIt demo for the created moveit configuration package.
 
 
