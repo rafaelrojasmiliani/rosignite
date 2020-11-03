@@ -20,7 +20,7 @@
         <joint name="joint_r" value="0" />
         <joint name="joint_s" value="0" />
         <joint name="joint_t" value="0" />
-        <joint name="joint_u" value="-0.006" />
+        <joint name="joint_u" value="0" />
     </group_state>
     <group_state name="home" group="manipulator">
         <joint name="joint_b" value="0" />
@@ -31,10 +31,8 @@
         <joint name="joint_t" value="0" />
         <joint name="joint_u" value="1.5" />
     </group_state>
-    <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector name="endeffector" parent_link="link_tool0" group="manipulator" parent_group="manipulator" />
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
-    <virtual_joint name="FixBase" type="fixed" parent_frame="world" child_link="world" />
+    <virtual_joint name="FixedBase" type="fixed" parent_frame="world" child_link="world" />
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="base_link" link2="link_e" reason="Never" />
     <disable_collisions link1="base_link" link2="link_l" reason="Never" />
