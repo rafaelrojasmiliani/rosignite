@@ -6,21 +6,21 @@ Tasks
 
 1. Creationg of ros packages which contains the URDF description of the robot's workspace `src/my_robot_description`
 
-2. Creation of a **MoveIt configuration package** `src/myrobot_moveit_config`. 
+2. Creation of a **MoveIt configuration package** `src/myrobot_moveit_config`.
 
-3. Integration of the MoveIt package into Gazebo. 
+3. Integration of the MoveIt package into Gazebo.
 
 ## Definitions
 
 - **MoveIt configuration package**
 
 - **MoveIt move group** It provides an interface for most operations that a user may want to carry out, specifically setting joint or pose goals, creating motion plans, moving the robot, adding objects into the environment and attaching/detaching objects from the robot. This interface communicates over ROS topics, services, and actions to the **MoveGroup Node**.
-The figure above shows the high-level system architecture for the primary node provided by MoveIt called `move_group`. 
+The figure above shows the high-level system architecture for the primary node provided by MoveIt called `move_group`.
 This node serves as an integrator: pulling all the individual components together to provide a set of ROS actions and services for users to use.
 a move group runs a `FollowJointTrajectoryAction`
 
 The `move_group` type of node is defined in [moveit\_ros/move\_group/src/move\_group.cpp](https://github.com/ros-planning/moveit_ros/blob/kinetic-devel/move_group/src/move_group.cpp).
-In this file the clas `MoveGroupExe` is created. 
+In this file the clas `MoveGroupExe` is created.
 The `main` of this node is [here](https://github.com/ros-planning/moveit_ros/blob/200ff00b2cad2c49811991b3af64cab5eb19f6fb/move_group/src/move_group.cpp#L148)
 ```
 int main(int argc, char **argv)
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
   // create a shared point to a transform listener
   boost::shared_ptr<tf::TransformListener> tf(new tf::TransformListener(ros::Duration(10.0)));
   // create planning_scene_monitor pointer
-  planning_scene_monitor::PlanningSceneMonitorPtr 
+  planning_scene_monitor::PlanningSceneMonitorPtr
     planning_scene_monitor(new planning_scene_monitor::PlanningSceneMonitor(ROBOT_DESCRIPTION, tf));
 
   if (planning_scene_monitor->getPlanningScene())
@@ -65,9 +65,9 @@ int main(int argc, char **argv)
 2. Instantiate a Planning scene monitor instance `planning_scene_monitor` with `planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor(new planning_scene_monitor::PlanningSceneMonitor(ROBOT_DESCRIPTION, tf));`
 
 3. `planning_scene_monitor->startSceneMonitor();`
-    
+
 4. `planning_scene_monitor->startWorldGeometryMonitor();`
-    
+
 5. `planning_scene_monitor->startStateMonitor();`
 
 6. Instantiate an instance of `move_group::MoveGroupExe`  claled `mge` with `move_group::MoveGroupExe mge(planning_scene_monitor, debug);`.
@@ -86,7 +86,7 @@ Its primary function is generating a Semantic Robot Description Format (SRDF) fi
 Additionally, it generates other necessary configuration files for use with the MoveIt!
 pipeline.
 
-1. Start the moveit stetup assistant. `roslaunch moveit_setup_assistant setup_assistant.launch`. 
+1. Start the moveit stetup assistant. `roslaunch moveit_setup_assistant setup_assistant.launch`.
 This will launch a windows with the following taps
 
 - Start
@@ -106,7 +106,7 @@ This will launch a windows with the following taps
 Looks for links that are always in collision, never in collision, in collision in the robot’s default position or when the links are adjacent to each other on the kinematic chain.
 The sampling density specifies how many random robot positions to check for self collision.
 
-3. Virtual joints are used primarily to attach the robot to the world. 
+3. Virtual joints are used primarily to attach the robot to the world.
 This virtual joint represents the motion of the base of the robot in a plane.
 In this tab we must define a joint by indicating
 - Virtual Joint name
@@ -119,10 +119,10 @@ Planning groups are used for semantically describing different parts of your rob
 
     1. Click on Add Group and you should see a new screen
 
-    2. Enter Group Name 
+    2. Enter Group Name
     3. Choose the kinematics solver `kdl_kinematics_plugin/KDLKinematicsPlugin` or `Kinematics/IKFast`.
 This windows will also provide text entries to set the paramenter of the kinematic solver.
-    4. Click on the **Add Joints button**. 
+    4. Click on the **Add Joints button**.
 You will see a list of joints on the left hand side.
 You need to choose all the joints that belong to the arm and add them to the right hand side.
 The joints are arranged in the order that they are stored in an internal tree structure.
@@ -133,15 +133,18 @@ If we have a gripper, we have to create another planning group for the gripper.
 
 5. Add robot poses
 
-6. In the **End Effectors** tab  we can designate groups as a special type of group: end effectors. 
+6. In the **End Effectors** tab  we can designate groups as a special type of group: end effectors.
 Designating a group as an end effectors allows some special operations to happen on them internally.
+**The ros ignite accademi does not do nothing here**.
 
 7. In the **Configuration Files** tab. Here you will create the moveIt configuration package
-    1. Choose a location and name for the ROS package that will be generated containing your new set of configuration files. 
-        - Click browse, select a good location
-        - click Create New Folder and click Choose. 
-All generated files will go directly into the directory you have chosen.
-    2. Click on the Generate Package button. The Setup Assistant will now generate and write a set of launch and config files into the directory of your choosing. 
+    1. Choose a location and name for the ROS package that will be generated containing your new set of configuration files.
+        - Click browse, select a good location.
+Here you selec the folder where you will put your package
+    2. Write a name in the input text.
+This will be the name of the package.
+Click on the Generate Package button.
+The Setup Assistant will now generate and write a set of launch and config files into the directory of your choosing.
 
 ## Combining MoveIt with Gazebo using RosControl
 
@@ -161,8 +164,8 @@ In this module it automatically loads a sia robot.
 `myrobot_planning_execution.launch` | loads `joint_names.yaml`, launches `$(find myrobot_moveit_config)/launch/planning_context.launch`, launches a joint state publisher with `/source_list=[/sia10f/joint_states]`, launches `$(find myrobot_moveit_config)/launch/move_group.launch`, and `"$(find myrobot_moveit_config)/launch/moveit_rviz.launch` | NO |
 
 
-1. Inside the config folder of your moveit package, create a new file named `controllers.yaml`. 
-Copy the following content inside it: 
+1. Inside the config folder of your moveit package, create a new file named `controllers.yaml`.
+Copy the following content inside it:
 ```
 controller_list:
   - name: sia10f/joint_trajectory_controller
@@ -171,13 +174,13 @@ controller_list:
     joints: [joint_s, joint_l, joint_e, joint_u, joint_r, joint_b, joint_t]
 ```
 
-2. Next, you'll have to create a file to define the names of the joints of your robot. 
+2. Next, you'll have to create a file to define the names of the joints of your robot.
 Again inside the config directory, create a new file called `joint_names.yaml`, and copy the following content in it:
 ```
 controller_joint_names: [joint_s, joint_l, joint_e, joint_u, joint_r, joint_b, joint_t]
 ```
 
-3. Now, if you open the `myrobot_moveit_controller_manager.launch.xml`, which is inside the launch directory, you'll see that it's empty. 
+3. Now, if you open the `myrobot_moveit_controller_manager.launch.xml`, which is inside the launch directory, you'll see that it's empty.
 Put the next content inside it:
 ```
 <launch>
@@ -188,7 +191,7 @@ Put the next content inside it:
 </launch>
 ```
 
-4. Finally, you will have to create a new launch file that sets up all the system to control your robot. 
+4. Finally, you will have to create a new launch file that sets up all the system to control your robot.
 So, inside the launch directory, create a new launch file `myrobot_planning_execution.launch`.
 ```
 <launch>
@@ -224,13 +227,11 @@ So, inside the launch directory, create a new launch file `myrobot_planning_exec
 - `myrobot_moveit_config` MoveIt configuration package
     - `planning_context.launch` loads the URDF and other data (as the one in `config/*.yaml`) into the ROS parameter server
     - `planning_pipeline.launch`: launch other launch files to setup OMPL (open motion planning library).
-    - `trajectory_execution.launch` 
+    - `trajectory_execution.launch`
     - `myrobot_moveit_controller_manager.launch.xml`
-    - `sensor_manaer.launch` 
-    - `move_group.launch` 
+    - `sensor_manaer.launch`
+    - `move_group.launch`
 ```
     <node name="move_group" launch-prefix="$(arg launch_prefix)" pkg="moveit_ros_move_group" type="move_group" respawn="false" output="screen" args="$(arg command_args)"/>
 ```
     - `demo.lauch` runs a MoveIt demo for the created moveit configuration package.
-
-
