@@ -237,3 +237,54 @@ The launch file in 4. is all you need to start an rviz moveit planner.
     <node name="move_group" launch-prefix="$(arg launch_prefix)" pkg="moveit_ros_move_group" type="move_group" respawn="false" output="screen" args="$(arg command_args)"/>
 ```
     - `demo.lauch` runs a MoveIt demo for the created moveit configuration package.
+
+## MoveIt configuration package launch files
+
+- `chomp_planning_pipeline.launch.xml`
+- `default_warehouse_db.launch`
+    - `warehouse.launch`
+- `demo_gazebo.launch`
+    - `gazebo.launch`
+    - `planning_context.launch`
+    - `move_group.launch`
+    - `moveit_rviz.launch`
+    - `default_warehouse_db.launch if=$(arg db)`
+- `demo.launch`
+    - `planning_context.launch`
+    - `move_group.launch`
+    - `moveit_rviz.launch if=$(arg use_rviz)`
+    - `default_warehouse_db.launch if=$(arg db)`
+- `fake_moveit_controller_manager.launch.xml`
+- `gazebo.launch`
+    - `$(find gazebo_ros)/launch/empty_world.launch`
+    - `ros_controllers.launch`
+- `joystick_control.launch`
+- `move_group.launch`
+    - `planning_context.launch`
+    - `planning_pipeline.launch.xml ns="move_group"` and `pipeline="ompl"`
+    - `trajectory_execution.launch.xml if="$(arg allow_trajectory_execution)" ns="move_group"`
+    - `sensor_manager.launch.xml if="$(ar allow_trajectory_execution)" ns="move_group"`
+- `moveit.rviz`
+- `moveit_rviz.launch`
+- `myrobot_moveit_controller_manager.launch.xml`
+- `myrobot_moveit_sensor_manager.launch.xml`
+- `myrobot_planning_execution.launch`
+    - `planning_context.launch`
+    - `move_group.launch`
+    - `moveit_rviz.launch`
+- `ompl_planning_pipeline.launch.xml`
+- `planning_context.launch`
+- `planning_pipeline.launch.xml`
+    - `$(arg pipeline)_planning_pipeline.launch.xml`
+- `ros_controllers.launch`
+- `run_benchmark_ompl.launch`
+    - `planning_context.launch`
+    - `warehouse.launch`
+- `sensor_manager.launch.xml`
+    - `$(arg moveit_sensor_manager)_moveit_sensor_manager.launch.xml` with `moveit_sensor_manager=myrobot`
+- `setup_assistant.launch`
+- `trajectory_execution.launch.xml`
+    - `$(arg moveit_controller_manager)_moveit_controller_manager.launch.xml` with `moveit_controller_manager=myrobot`
+- `warehouse.launch`
+    - `warehouse_settings.launch.xml`
+- `warehouse_settings.launch.xml`

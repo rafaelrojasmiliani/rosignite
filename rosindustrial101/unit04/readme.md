@@ -194,12 +194,77 @@ There are two different **abstract classes** called `MoveItControllerManager`
 - `moveit_ros_control_interface::MoveItControllerManager` from the `moveit_plugins` package [defined and implemented here in the same file](https://github.com/ros-planning/moveit_plugins/blob/cf0ddc86cf843688c8d172cf233a5d0e63e7f9de/moveit_ros_control_interface/src/controller_manager_plugin.cpp#L79).
 `moveit_ros_control_interface::MoveItControllerManager` inherits from `moveit_controller_manager::MoveItControllerManager`.
 
-`TrajectoryExecutionManager` uses an instance of `moveit_controller_manager::MoveItControllerManager` which is inizialized as
+`TrajectoryExecutionManager` uses an instance of `moveit_controller_manager::MoveItControllerManager` which is initialized as
 ```C++
     controller_manager_ = controller_manager_loader_->createUniqueInstance(controller);
 ```
-where `controller` is a string available in the ROS paramenter `
+where `controller` is a string available in the ROS parameter `
 moveit_controller_manager`.
+
+### MoveIt Simple Controller manager
+
+the `MoveItSimpleControllerManager` is [defined and implemented here](https://github.com/ros-planning/moveit/blob/7ad2bc7b86dad08061d98668ba34feba54bb05cc/moveit_plugins/moveit_simple_controller_manager/src/moveit_simple_controller_manager.cpp)
+
+- **Variables**
+    - `std::map<std::string, ActionBasedControllerHandleBasePtr> controllers_;`
+    - `std::map<std::string, moveit_controller_manager::MoveItControllerManager::ControllerState> controller_states_;`
+
+- **Function** Constructor
+```C++
+
+    XmlRpc::XmlRpcValue controller_list;
+    node_handle_.getParam("controller_list", controller_list);
+
+    /* actually create each controller */
+    for (int i = 0; i < controller_list.size(); ++i){
+        name = controller_list[i]["name"];
+        action_ns = controller_list[i]["action_ns"];
+        type = controller_list[i]["type"];
+
+        ActionBasedControllerHandleBasePtr new_handle;
+        if (type == "GripperCommand"){ ...}
+        else if (type == "FollowJointTrajectory")
+        {
+          auto h = new FollowJointTrajectoryControllerHandle(name, action_ns);
+          new_handle.reset(h);
+        }
+        else{
+          ROS_ERROR_STREAM_NAMED(LOGNAME, "Unknown controller type: " << type.c_str());
+        }
+
+        moveit_controller_manager::MoveItControllerManager::ControllerState state;
+        // initialiaze moveit_controller_manager
+        this->controller_states_[name] = state;
+
+        for (int j = 0; j < controller_list[i]["joints"].size(); ++j)
+          new_handle->addJoint(std::string(controller_list[i]["joints"][j]));
+
+        new_handle->configure(controller_list[i]);
+      }
+```
+### `FollowJointTrajectoryControllerHandle`
+
+The class `FollowJointTrajectoryControllerHandle` is [defined here](https://github.com/ros-planning/moveit/blob/master/moveit_plugins/moveit_simple_controller_manager/include/moveit_simple_controller_manager/follow_joint_trajectory_controller_handle.h) and [implemented here](https://github.com/ros-planning/moveit/blob/master/moveit_plugins/moveit_simple_controller_manager/src/follow_joint_trajectory_controller_handle.cpp)
+
+- **Function** `sendTrajectory`
+    ```
+    bool FollowJointTrajectoryControllerHandle::sendTrajectory(const moveit_msgs::RobotTrajectory& trajectory){
+          control_msgs::FollowJointTrajectoryGoal goal = goal_template_;
+  goal.trajectory = trajectory.joint_trajectory;
+  controller_action_client_->sendGoal(
+      goal, boost::bind(&FollowJointTrajectoryControllerHandle::controllerDoneCallback, this, _1, _2),
+      boost::bind(&FollowJointTrajectoryControllerHandle::controllerActiveCallback, this),
+      boost::bind(&FollowJointTrajectoryControllerHandle::controllerFeedbackCallback, this, _1));
+  done_ = false;
+  last_exec_ = moveit_controller_manager::ExecutionStatus::RUNNING;
+    }
+    ```
+
+- **Variables**
+    - `control_msgs::FollowJointTrajectoryGoal goal_template_`
+
+- **Actions**
+    - [joint\_trajectory\_action](http://wiki.ros.org/joint_trajectory_action)
 
 
 
@@ -210,7 +275,7 @@ catkin_create_pkg my_motion_scripts std_msgs geometry_msgs rospy
 ```
 
 2. Write the following python code in `myrobot_python/src/python_moveit.py`
-```
+```python
 import sys
 import copy
 import rospy
@@ -275,7 +340,7 @@ This line creates an instance of the class `moveit_commander.move_group.MoveGrou
 
 
 
-## MoveIt condiguration package launch files
+## MoveIt configuration package launch files
 
 - `chomp_planning_pipeline.launch.xml`
 - `default_warehouse_db.launch`
@@ -285,12 +350,12 @@ This line creates an instance of the class `moveit_commander.move_group.MoveGrou
     - `planning_context.launch`
     - `move_group.launch`
     - `moveit_rviz.launch`
-    - `default_warehouse_db.launch" if="$(arg db)`
+    - `default_warehouse_db.launch if=$(arg db)`
 - `demo.launch`
     - `planning_context.launch`
     - `move_group.launch`
-    - `moveit_rviz.launch" if="$(arg use_rviz)`
-    - `default_warehouse_db.launch" if="$(arg db)`
+    - `moveit_rviz.launch if=$(arg use_rviz)`
+    - `default_warehouse_db.launch if=$(arg db)`
 - `fake_moveit_controller_manager.launch.xml`
 - `gazebo.launch`
     - `$(find gazebo_ros)/launch/empty_world.launch`
