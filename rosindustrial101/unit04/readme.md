@@ -114,12 +114,9 @@ The method `TrajectoryExecutionManager::receiveEvent` does just one operation: i
 
 - **Functions**: `TrajectoryExecutionManager::initialize`
     1. calls `TrajectoryExecutionManager::loadControllerParams`
-```
+    ```
     XmlRpc::XmlRpcValue controller_list;
-    parameter_exists = node_handle_.getParam("controller_list", controller_list)
-    parameters_is_corrent_type = controller_list.getType() == XmlRpc::XmlRpcValue::TypeArray
-  if (parameter_exists && parameters_is_corrent_type)
-  {
+    node_handle_.getParam("controller_list", controller_list)
     for (const XmlRpc::XmlRpcValue& controller : controller_list)
     {
         controller_allowed_execution_duration_scaling_[std::string(controller["name"])] =
@@ -127,8 +124,7 @@ The method `TrajectoryExecutionManager::receiveEvent` does just one operation: i
         controller_allowed_goal_duration_margin_[std::string(controller["name"])] =
               controller["allowed_goal_duration_margin"];
     }
-  }
-```
+    ```
     2. Load the parameters
 
 ```
