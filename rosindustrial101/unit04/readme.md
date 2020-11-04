@@ -47,6 +47,10 @@ This code exists in the `trajectory_execution_manager` namespace.
 The class `TrajectoryExecutionManager` is [defined here](https://github.com/ros-planning/moveit/blob/7ad2bc7b86dad08061d98668ba34feba54bb05cc/moveit_ros/planning/trajectory_execution_manager/include/moveit/trajectory_execution_manager/trajectory_execution_manager.h#L59) and [implemented here](https://github.com/ros-planning/moveit/blob/7ad2bc7b86dad08061d98668ba34feba54bb05cc/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L57).
 `TrajectoryExecutionManager` implements a [dynamic reconfigure server](http://wiki.ros.org/dynamic_reconfigure) as the private class `TrajectoryExecutionManager::DynamicReconfigureImpl` [here](https://github.com/ros-planning/moveit/blob/7ad2bc7b86dad08061d98668ba34feba54bb05cc/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L63).
 
+The generation of the headers for dynamic reconfigure of the `moveit_ros_planning` package [are here](https://github.com/ros-planning/moveit/blob/9f9e69c54529e1aa156851abb6aae7047b20780d/moveit_ros/planning/CMakeLists.txt#L36).
+[This dynamic reconfigure file-generator](https://github.com/ros-planning/moveit/blob/master/moveit_ros/planning/trajectory_execution_manager/cfg/TrajectoryExecutionDynamicReconfigure.cfg) generates  `moveit_ros_planning/TrajectoryExecutionDynamicReconfigureConfig.h` with the class `moveit_ros_planning::TrajectoryExecutionDynamicReconfigureConfig`.
+This allows to automatically set many parameters.
+
 
 The `trajectory_execution_manager::TrajectoryExecutionManager` class allows two main operations:
 
@@ -92,7 +96,10 @@ for(std::size_t i = 0; i < context.controllers_.size(); ++i)
     handles[i]->sendTrajectory(context.trajectory_parts_[i])
 
 for (moveit_controller_manager::MoveItControllerHandlePtr& handle : handles)
-        handle->waitForExecution();
+        if (execution_duration_monitoring_)
+           // stops the trajectory execution if it takes too long
+        else
+            handle->waitForExecution();
 ```
 
 - **Variables**
@@ -107,6 +114,12 @@ Otherwise this is read from the ROS parameter `moveit_manage_controllers`.
     - `moveit_manage_controllers`
     - `moveit_controller_manager`
     - `controller_list`
+    - `~/trajectory_execution/execution_duration_monitoring` (with dynamic reconfigure)
+    - `~/trajectory_execution/allowed_execution_duration_scaling` (with dynamic reconfigure)
+    - `~/trajectory_execution/allowed_goal_duration_margin` (with dynamic reconfigure)
+    - `~/trajectory_execution/execution_velocity_scaling` (with dynamic reconfigure)
+    - `~/trajectory_execution/allowed_start_tolerance` (with dynamic reconfigure)
+    - `~/trajectory_execution/wait_for_trajectory_completion` (with dynamic reconfigure)
 
 - **Topics**
     - Subscribes to `trajectory_execution_event` with callback `TrajectoryExecutionManager::receiveEvent`.
@@ -259,3 +272,56 @@ This line creates an instance of the class `moveit_commander.move_group.MoveGrou
     - **Topics**
         - published `moveit_msgs::AttachedCollisionObject`
         - published `trajectory_execution_manager::TrajectoryExecutionManager::EXECUTION_EVENT_TOPIC`
+
+
+
+## MoveIt condiguration package launch files
+
+- `chomp_planning_pipeline.launch.xml`
+- `default_warehouse_db.launch`
+    - `warehouse.launch`
+- `demo_gazebo.launch`
+    - `gazebo.launch`
+    - `planning_context.launch`
+    - `move_group.launch`
+    - `moveit_rviz.launch`
+    - `default_warehouse_db.launch" if="$(arg db)`
+- `demo.launch`
+    - `planning_context.launch`
+    - `move_group.launch`
+    - `moveit_rviz.launch" if="$(arg use_rviz)`
+    - `default_warehouse_db.launch" if="$(arg db)`
+- `fake_moveit_controller_manager.launch.xml`
+- `gazebo.launch`
+    - `$(find gazebo_ros)/launch/empty_world.launch`
+    - `ros_controllers.launch`
+- `joystick_control.launch`
+- `move_group.launch`
+    - `planning_context.launch`
+    - `planning_pipeline.launch.xml ns="move_group"` and `pipeline="ompl"`
+    - `trajectory_execution.launch.xml if="$(arg allow_trajectory_execution)" ns="move_group"`
+    - `sensor_manager.launch.xml if="$(ar allow_trajectory_execution)" ns="move_group"`
+- `moveit.rviz`
+- `moveit_rviz.launch`
+- `myrobot_moveit_controller_manager.launch.xml`
+- `myrobot_moveit_sensor_manager.launch.xml`
+- `myrobot_planning_execution.launch`
+    - `planning_context.launch`
+    - `move_group.launch`
+    - `moveit_rviz.launch`
+- `ompl_planning_pipeline.launch.xml`
+- `planning_context.launch`
+- `planning_pipeline.launch.xml`
+    - `$(arg pipeline)_planning_pipeline.launch.xml`
+- `ros_controllers.launch`
+- `run_benchmark_ompl.launch`
+    - `planning_context.launch`
+    - `warehouse.launch`
+- `sensor_manager.launch.xml`
+    - `$(arg moveit_sensor_manager)_moveit_sensor_manager.launch.xml` with `moveit_sensor_manager=myrobot`
+- `setup_assistant.launch`
+- `trajectory_execution.launch.xml`
+    - `$(arg moveit_controller_manager)_moveit_controller_manager.launch.xml` with `moveit_controller_manager=myrobot`
+- `warehouse.launch`
+    - `warehouse_settings.launch.xml`
+- `warehouse_settings.launch.xml`
