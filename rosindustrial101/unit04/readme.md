@@ -89,7 +89,7 @@ This function executes the trajectory encapsulated in the trajectory context `tr
 context =  trajectories_[part_index]
 for(std::size_t i = 0; i < context.controllers_.size(); ++i)
     handles[i] = controller_manager_->getControllerHandle(context.controllers_[i]); //context.controllers_[i] is a string
-    context.controllers_[i]->sendTrajectory(context.trajectory_parts_[i])
+    handles[i]->sendTrajectory(context.trajectory_parts_[i])
 
 for (moveit_controller_manager::MoveItControllerHandlePtr& handle : handles)
         handle->waitForExecution();
@@ -129,7 +129,6 @@ The method `TrajectoryExecutionManager::receiveEvent` does just one operation: i
     }
   }
 ```
-
     2. Load the parameters
 
 ```
@@ -171,12 +170,27 @@ The main purpose of this interface is to expose the set of known controllers and
 `moveit_controller_manager::MoveItControllerManager` is an abstract class that defines the functionality needed by `trajectory_execution_manager::TrajectoryExecutionManager::execute` and needs to be implemented for each robot type.
 Often, the implementation of these plugins are quite similar and it is easy to modify existing code to achieve the desired functionality.
 
+MoveIt controller managers, somewhat a misnomer, are the interfaces to your custom low level controllers.
+A better way to think of them are controller interfaces.
+For most use cases, the included [MoveItSimpleControllerManager](https://github.com/ros-planning/moveit/blob/master/moveit_plugins/moveit_simple_controller_manager) is sufficient if your robot controllers already provide ROS actions for FollowJointTrajectory.
+If you use ros_control, the included [MoveItRosControlInterface](https://github.com/ros-planning/moveit/blob/master/moveit_plugins/moveit_ros_control_interface) is also ideal.
+
+However, for some applications you might desire a more custom controller manager.
+An example template for starting your custom controller manager is provided here.
+
 There are two different **abstract classes** called `MoveItControllerManager`
 
 - `moveit_controller_manager::MoveItControllerManager` from the `moveit_core` package [defined here](https://github.com/ros-planning/moveit_core/blob/a8cd90b2d4798f67ccc07c5f24ea52b0f9539f51/controller_manager/include/moveit/controller_manager/controller_manager.h#L144)
 
 - `moveit_ros_control_interface::MoveItControllerManager` from the `moveit_plugins` package [defined and implemented here in the same file](https://github.com/ros-planning/moveit_plugins/blob/cf0ddc86cf843688c8d172cf233a5d0e63e7f9de/moveit_ros_control_interface/src/controller_manager_plugin.cpp#L79).
 `moveit_ros_control_interface::MoveItControllerManager` inherits from `moveit_controller_manager::MoveItControllerManager`.
+
+`TrajectoryExecutionManager` uses an instance of `moveit_controller_manager::MoveItControllerManager` which is inizialized as
+```
+    controller_manager_ = controller_manager_loader_->createUniqueInstance(controller);
+```
+where `controller` is a string available in the ROS paramenter `
+moveit_controller_manager`.
 
 
 
