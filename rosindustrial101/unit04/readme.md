@@ -1,9 +1,5 @@
 # Motion Planning with Python
 
-```mermaid
-graph TD;
-    A-->B;
-```
 
 This Unit will show you how to perform motion planning with Python.
 By completing this Unit, you will be able to create a Python program that performs motion planning on your robot
@@ -251,7 +247,7 @@ the `MoveItSimpleControllerManager` is [defined and implemented here](https://gi
 The class `FollowJointTrajectoryControllerHandle` is [defined here](https://github.com/ros-planning/moveit/blob/master/moveit_plugins/moveit_simple_controller_manager/include/moveit_simple_controller_manager/follow_joint_trajectory_controller_handle.h) and [implemented here](https://github.com/ros-planning/moveit/blob/master/moveit_plugins/moveit_simple_controller_manager/src/follow_joint_trajectory_controller_handle.cpp).
 This class inherits from `ActionBasedControllerHandle<control_msgs::FollowJointTrajectoryAction>`.
 This class wraps `ActionBasedControllerHandle<control_msgs::FollowJointTrajectoryAction>` and implements the `sendTrajectory` function.
-`ActionBasedControllerHandle` recieves the namespace of the `FollowJointTrajectoryAction` in its constructor which is called with the constructor
+`ActionBasedControllerHandle` receives the namespace of the `FollowJointTrajectoryAction` in its constructor which is called with the constructor
 ```
 FollowJointTrajectoryControllerHandle(const std::string& name, const std::string& action_ns)
 ```
@@ -355,6 +351,55 @@ This line creates an instance of the class `moveit_commander.move_group.MoveGrou
         - published `moveit_msgs::AttachedCollisionObject`
         - published `trajectory_execution_manager::TrajectoryExecutionManager::EXECUTION_EVENT_TOPIC`
 
+
+## The `move_group` node
+
+The `move_group` node is implemented here `https://github.com/ros-planning/moveit/blob/master/moveit_ros/move_group/src/move_group.cpp`
+
+- **Publicated Topics**
+    - `/move_group/display_contacts [visualization_msgs/MarkerArray]`
+    - `/move_group/display_cost_sources [visualization_msgs/MarkerArray]`
+    - `/move_group/display_grasp_markers [visualization_msgs/MarkerArray]`
+    - `/move_group/display_planned_path [moveit_msgs/DisplayTrajectory]`
+    - `/move_group/filtered_cloud [sensor_msgs/PointCloud2]`
+    - `/move_group/monitored_planning_scene [moveit_msgs/PlanningScene]`
+    - `/move_group/motion_plan_request [moveit_msgs/MotionPlanRequest]`
+    - `/move_group/ompl/parameter_descriptions [dynamic_reconfigure/ConfigDescription]`
+    - `/move_group/ompl/parameter_updates [dynamic_reconfigure/Config]`
+    - `/move_group/plan_execution/parameter_descriptions [dynamic_reconfigure/ConfigDescription]`
+    - `/move_group/plan_execution/parameter_updates [dynamic_reconfigure/Config]`
+    - `/move_group/planning_scene_monitor/parameter_descriptions [dynamic_reconfigure/ConfigDescription]`
+    - `/move_group/planning_scene_monitor/parameter_updates [dynamic_reconfigure/Config]`
+    - `/move_group/sense_for_plan/parameter_descriptions [dynamic_reconfigure/ConfigDescription]`
+    - `/move_group/sense_for_plan/parameter_updates [dynamic_reconfigure/Config]`
+    - `/move_group/trajectory_execution/parameter_descriptions [dynamic_reconfigure/ConfigDescription]`
+    - `/move_group/trajectory_execution/parameter_updates [dynamic_reconfigure/Config]`
+
+- **Subscribed Topics**
+    - `/attached_collision_object [unknown type]`
+    - `/collision_object [unknown type]`
+    - `/execute_trajectory/cancel [unknown type]`
+    - `/execute_trajectory/goal [unknown type]`
+    - `/head_mount_kinect/depth_registered/points [unknown type]`
+    - `/joint_states [sensor_msgs/JointState]`
+    - `/move_group/cancel [unknown type]`
+    - `/move_group/goal [unknown type]`
+    - `/pickup/cancel [unknown type]`
+    - `/pickup/goal [unknown type]`
+    - `/place/cancel [unknown type]`
+    - `/place/goal [unknown type]`
+    - `/planning_scene [moveit_msgs/PlanningScene]`
+    - `/planning_scene_world [moveit_msgs/PlanningSceneWorld]`
+    - `/tf [tf2_msgs/TFMessage]`
+    - `/tf_static [tf2_msgs/TFMessage]`
+    - `/trajectory_execution_event [unknown type]`
+
+
+- **Actions offered** (in the sense that `move_group` subscribe to `namespace/goal`)
+    - `moveit_msgs/ExecuteTrajectoryAction` in `/execute_trajectory/goal`
+    - `moveit_msgs/MoveGroupAction` in `/move_group/goal`
+    - `moveit_msgs/PickupAction` in `/pickup/goal`
+    - `moveit_msgs/PlaceAction` in `/place/goal`
 
 
 ## MoveIt configuration package launch files

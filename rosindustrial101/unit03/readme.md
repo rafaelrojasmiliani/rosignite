@@ -288,3 +288,12 @@ The launch file in 4. is all you need to start an rviz moveit planner.
 - `warehouse.launch`
     - `warehouse_settings.launch.xml`
 - `warehouse_settings.launch.xml`
+
+
+# `move_group` actions
+
+
+- `moveit_msgs/ExecuteTrajectoryAction`
+- `moveit_msgs/MoveGroupAction`
+- `moveit_msgs/PickupAction`
+- `moveit_msgs/PlaceAction`

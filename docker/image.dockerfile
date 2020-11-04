@@ -30,3 +30,4 @@ WORKDIR /
 
 
 COPY ./configfiles/screenrc /root/.screenrc
+COPY ./configfiles/screenrc /home/${myuser}/.screenrc
