@@ -377,9 +377,9 @@ The `move_group` node is implemented here `https://github.com/ros-planning/movei
 
 - **Subscribed Topics**
     - `/attached_collision_object [unknown type]`
-    - `/collision_object [unknown type]`
     - `/head_mount_kinect/depth_registered/points [unknown type]`
     - `/joint_states [sensor_msgs/JointState]`
+    - `/collision_object [unknown type]`
     - `/planning_scene [moveit_msgs/PlanningScene]`
     - `/planning_scene_world [moveit_msgs/PlanningSceneWorld]`
     - `/tf [tf2_msgs/TFMessage]`
@@ -431,10 +431,27 @@ int main(int argc, char **argv) {
 ## `PlanningSceneMonitor`
 
 `PlanningSceneMonitor` is [defined here](https://github.com/ros-planning/moveit/blob/47884198c2585215de8f365a7ff20479f8bb4b51/moveit_ros/planning/planning_scene_monitor/include/moveit/planning_scene_monitor/planning_scene_monitor.h#L61) and [implemented here](https://github.com/ros-planning/moveit/blob/47884198c2585215de8f365a7ff20479f8bb4b51/moveit_ros/planning/planning_scene_monitor/src/planning_scene_monitor.cpp).
+In its construction, this runs a `ros::AsyncSpinner`.
 
-- **Function** `PlanningSceneMonitor::startSceneMonitor` by default it creates a subscriber to `planning_scene` with callback 
+- **Function** `PlanningSceneMonitor::startSceneMonitor` by default it creates a subscriber to `planning_scene` with callback `PlanningSceneMonitor::newPlanningSceneCallback`
+
+- **Function** `PlanningSceneMonitor::newPlanningSceneCallback`, just calls `PlanningSceneMonitor::newPlanningSceneMessage`
+
+- **Function** `PlanningSceneMonitor::newPlanningSceneMessage`. Uses the tools from the package `moveit_ros_occupancy_map_monitor` and the class `occupancy_map_monitor::OccupancyMapMonitor` to update the scene.
+
+- **Function** `PlanningSceneMonitor::startWorldGeometryMonitor` by default it creates a subscriber to `collision_object` with callback `PlanningSceneMonitor::collisionObjectCallback` and a subscriber to `planning_scene_world` with callback `PlanningSceneMonitor::newPlanningSceneWorldCallback`
+
+- **Function** `PlanningSceneMonitor::collisionObjectCallback` 
+- **Function** `PlanningSceneMonitor::newPlanningSceneWorldCallback` 
 
 
+
+
+- **Subscribed topics**
+    - `planning_scene` of type `moveit_msgs::PlanningScene` [defined here](http://docs.ros.org/en/api/moveit_msgs/html/msg/PlanningScene.html).
+On this message the function `PlanningSceneMonitor::newPlanningSceneMessage` is called.
+    - `collision_object` of type `moveit_msgs::CollisionObject` [defined here](http://docs.ros.org/en/jade/api/moveit_msgs/html/msg/CollisionObject.html).
+    - `planning_scene_world` of type `moveit_msgs::PlanningScene`.
 ## MoveIt configuration package launch files
 
 - `chomp_planning_pipeline.launch.xml`
