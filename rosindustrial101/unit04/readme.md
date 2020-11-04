@@ -45,14 +45,73 @@ All the modules in `moveit_commander` make reference to the python package `move
 MoveIt includes a library for managing controllers and the execution of trajectories.
 This code exists in the `trajectory_execution_manager` namespace.
 The class `TrajectoryExecutionManager` is [defined here](https://github.com/ros-planning/moveit/blob/7ad2bc7b86dad08061d98668ba34feba54bb05cc/moveit_ros/planning/trajectory_execution_manager/include/moveit/trajectory_execution_manager/trajectory_execution_manager.h#L59) and [implemented here](https://github.com/ros-planning/moveit/blob/7ad2bc7b86dad08061d98668ba34feba54bb05cc/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L57).
-`TrajectoryExecutionManager` inherits from `DynamicReconfigureImpl`
+`TrajectoryExecutionManager` implements a [dynamic reconfigure server](http://wiki.ros.org/dynamic_reconfigure) as the private class `TrajectoryExecutionManager::DynamicReconfigureImpl` [here](https://github.com/ros-planning/moveit/blob/7ad2bc7b86dad08061d98668ba34feba54bb05cc/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L63).
 
-The trajectory_execution_manager::TrajectoryExecutionManager class allows two main operations:
 
-    trajectory_execution_manager::TrajectoryExecutionManager::push() adds trajectories specified as a moveit_msgs::RobotTrajectory message type to a queue of trajectories to be executed in sequence. Each trajectory can be specified for any set of joints in the robot. Because controllers may only be available for certain groups of joints, this function may decide to split one trajectory into multiple ones and pass them to corresponding controllers (this time in parallel, using the same time stamp for the trajectory points). This approach assumes that controllers respect the time stamps specified for the waypoints.
-    trajectory_execution_manager::TrajectoryExecutionManager::execute() passes the appropriate trajectories to different controllers, monitors execution, optionally waits for completion of the execution and, very importantly, switches active controllers as needed (optionally) to be able to execute the specified trajectories.
+The `trajectory_execution_manager::TrajectoryExecutionManager` class allows two main operations:
 
-The functionality of the trajectory execution in MoveIt! usually needs robot-specific interaction with controllers. For this reason, the concept of a controller manager specific to MoveIt! (moveit_controller_manager::MoveItControllerManager) was defined. This is an abstract class that defines the functionality needed by trajectory_execution_manager::TrajectoryExecutionManager and needs to be implemented for each robot type. Often, the implementation of these plugins are quite similar and it is easy to modify existing code to achieve the desired functionality (see for example pr2_moveit_controller_manager::Pr2MoveItControllerManager).
+1. `trajectory_execution_manager::TrajectoryExecutionManager::push()` [implemented here](https://github.com/ros-planning/moveit/blob/7ad2bc7b86dad08061d98668ba34feba54bb05cc/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L262) with various overloads.
+Its main implementation is
+```C++
+bool TrajectoryExecutionManager::push(const moveit_msgs::RobotTrajectory& trajectory,
+                                      const std::vector<std::string>& controllers)
+```
+adds trajectories specified as a `moveit_msgs::RobotTrajectory` message type to a queue of trajectories to be executed in sequence.
+This is done by wrapping the inputs `trajectory` and `controllers` into a simple `struct` [defined here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_ros/planning/trajectory_execution_manager/include/moveit/trajectory_execution_manager/trajectory_execution_manager.h#L73) which is created with `TrajectoryExecutionManager::configure` [here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L1032) and pushed into `TrajectoryExecutionManager::trajectories_`.
+Each trajectory can be specified for any set of joints in the robot.
+Because controllers may only be available for certain groups of joints, this function may decide to split one trajectory into multiple ones and pass them to corresponding controllers (this time in parallel, using the same time stamp for the trajectory points).
+This approach assumes that controllers respect the time stamps specified for the waypoints.
+
+2. `trajectory_execution_manager::TrajectoryExecutionManager::execute()` passes the appropriate trajectories to different controllers, monitors execution, optionally waits for completion of the execution and, very importantly, switches active controllers as needed (optionally) to be able to execute the specified trajectories.
+This function has different overloaders, but its main definition [is here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L1208)
+```
+void TrajectoryExecutionManager::execute(const ExecutionCompleteCallback& callback,
+                                         const PathSegmentCompleteCallback& part_callback, bool auto_clear)
+```
+This method starts a `boost::thread` [here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L1226) which executes `TrajectoryExecutionManager::executeThread` [implemented here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L1269) that is defined as
+```
+void TrajectoryExecutionManager::executeThread(const ExecutionCompleteCallback& callback,
+                                               const PathSegmentCompleteCallback& part_callback, bool auto_clear)
+```
+the arguments `callback` and `part_callback` can be defined by the user and their defaults are implementations of `boost::function` [see here](https://theboostcpplibraries.com/boost.function) [defined here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_ros/planning/trajectory_execution_manager/include/moveit/trajectory_execution_manager/trajectory_execution_manager.h#L66) and [here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_ros/planning/trajectory_execution_manager/include/moveit/trajectory_execution_manager/trajectory_execution_manager.h#L70).
+The main functionality of `TrajectoryExecutionManager::executeThread` is to call `TrajectoryExecutionManager::executePart` [here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L1290).
+
+`TrajectoryExecutionManager::executePart` is [implemented here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L1321) as
+```
+bool TrajectoryExecutionManager::executePart(std::size_t part_index)
+```
+This function executes the trajectory encapsulated in the trajectory context `trajectories_[part_index]` in something like
+```
+context =  trajectories_[part_index]
+for(std::size_t i = 0; i < context.controllers_.size(); ++i)
+    handles[i] = controller_manager_->getControllerHandle(context.controllers_[i]);
+    context.controllers_[i]->sendTrajectory(context.trajectory_parts_[i])
+
+for (moveit_controller_manager::MoveItControllerHandlePtr& handle : handles)
+        handle->waitForExecution();
+```
+
+- **Variables**
+    - `std::vector<TrajectoryExecutionContext*> trajectories_;`
+    - `std::deque<TrajectoryExecutionContext*> continuous_execution_queue_;`
+    - `std::unique_ptr<pluginlib::ClassLoader<moveit_controller_manager::MoveItControllerManager> > controller_manager_loader_;`
+    - `moveit_controller_manager::MoveItControllerManagerPtr     controller_manager_;`
+
+- **Parameters**
+    - `moveit_manage_controllers`
+    - `moveit_controller_manager`
+    - `controller_list`
+
+## MoveIt controller manager
+
+MoveIt does not enforce how controllers are implemented.
+To make your controllers usable by MoveIt, this interface needs to be implemented.
+The main purpose of this interface is to expose the set of known controllers and potentially to allow activating and deactivating them, if multiple controllers are available.
+
+`moveit_controller_manager::MoveItControllerManager` is an abstract class that defines the functionality needed by `trajectory_execution_manager::TrajectoryExecutionManager::execute` and needs to be implemented for each robot type.
+Often, the implementation of these plugins are quite similar and it is easy to modify existing code to achieve the desired functionality.
+
+
 
 ## Procedure
 1. We create a new package with
