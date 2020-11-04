@@ -108,9 +108,12 @@ Otherwise this is read from the ROS parameter `moveit_manage_controllers`.
     - `moveit_controller_manager`
     - `controller_list`
 
-- **Functions**
-    - `TrajectoryExecutionManager::initialize`
-        1. calls `TrajectoryExecutionManager::loadControllerParams`
+- **Topics**
+    - Subscribes to `trajectory_execution_event` with callback `TrajectoryExecutionManager::receiveEvent`.
+The method `TrajectoryExecutionManager::receiveEvent` does just one operation: it calls `TrajectoryExecutionManager::processEvent`.
+
+- **Functions**: `TrajectoryExecutionManager::initialize`
+    1. calls `TrajectoryExecutionManager::loadControllerParams`
 ```
     XmlRpc::XmlRpcValue controller_list;
     parameter_exists = node_handle_.getParam("controller_list", controller_list)
@@ -126,7 +129,7 @@ Otherwise this is read from the ROS parameter `moveit_manage_controllers`.
     }
   }
 ```
-        2. Load the paramenters
+    2. Load the parameters
 ```
     void *myplug = new pluginlib::ClassLoader<moveit_controller_manager::MoveItControllerManager>("moveit_core", "moveit_controller_manager::MoveItControllerManager")
 
@@ -138,11 +141,25 @@ Otherwise this is read from the ROS parameter `moveit_manage_controllers`.
     if (!controller.empty())
         controller_manager_ = controller_manager_loader_->createUniqueInstance(controller);
 ```
-        3. Calls `TrajectoryExecutionManager::reloadControllerInformation`.
-This function initializes the vector `std::map<std::string, ControllerInformation> known_controllers_;``
+    3. Calls `TrajectoryExecutionManager::reloadControllerInformation`.
+This function initializes the vector `std::map<std::string, ControllerInformation> known_controllers_;`.
+The class `TrajectoryExecutionManager::ControllerInformation` is [defined here](https://github.com/ros-planning/moveit/blob/7ad2bc7b86dad08061d98668ba34feba54bb05cc/moveit_ros/planning/trajectory_execution_manager/include/moveit/trajectory_execution_manager/trajectory_execution_manager.h#L246).
+
+    4. Subscribes to `trajectory_execution_event` with callback `TrajectoryExecutionManager::receiveEvent`
+
+    5. Instantiantes `TrajectoryExecutionManager::DynamicReconfigureImpl` for the current instance of `TrajectoryExecutionManager`.
+`TrajectoryExecutionManager::DynamicReconfigureImpl` is [implemented here](https://github.com/ros-planning/moveit/blob/7ad2bc7b86dad08061d98668ba34feba54bb05cc/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L57)
 
 
-
+- **Function**: `TrajectoryExecutionManager::receiveEvent` and `TrajectoryExecutionManager::processEvent` (callback for `trajectory_execution_event`)
+    1. `TrajectoryExecutionManager::receiveEvent` calls `TrajectoryExecutionManager::processEvent`.
+    2. Stops the trajectory
+```
+  if (event == "stop")
+    stopExecution(true);
+  else
+    ROS_WARN_STREAM_NAMED(name_, "Unknown event type: '" << event << "'");
+```
 ## MoveIt controller manager
 
 MoveIt does not enforce how controllers are implemented.
