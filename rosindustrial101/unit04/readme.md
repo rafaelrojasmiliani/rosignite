@@ -129,7 +129,9 @@ The method `TrajectoryExecutionManager::receiveEvent` does just one operation: i
     }
   }
 ```
+
     2. Load the parameters
+
 ```
     void *myplug = new pluginlib::ClassLoader<moveit_controller_manager::MoveItControllerManager>("moveit_core", "moveit_controller_manager::MoveItControllerManager")
 
