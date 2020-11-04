@@ -40,6 +40,19 @@ All the modules in `moveit_commander` make reference to the python package `move
 - `_moveit_robot_interface`
 
 
+## `trajectory_execution_manager`
+
+MoveIt includes a library for managing controllers and the execution of trajectories.
+This code exists in the `trajectory_execution_manager` namespace.
+The class `TrajectoryExecutionManager` is [defined here](https://github.com/ros-planning/moveit/blob/7ad2bc7b86dad08061d98668ba34feba54bb05cc/moveit_ros/planning/trajectory_execution_manager/include/moveit/trajectory_execution_manager/trajectory_execution_manager.h#L59) and [implemented here](https://github.com/ros-planning/moveit/blob/7ad2bc7b86dad08061d98668ba34feba54bb05cc/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L57).
+`TrajectoryExecutionManager` inherits from `DynamicReconfigureImpl`
+
+The trajectory_execution_manager::TrajectoryExecutionManager class allows two main operations:
+
+    trajectory_execution_manager::TrajectoryExecutionManager::push() adds trajectories specified as a moveit_msgs::RobotTrajectory message type to a queue of trajectories to be executed in sequence. Each trajectory can be specified for any set of joints in the robot. Because controllers may only be available for certain groups of joints, this function may decide to split one trajectory into multiple ones and pass them to corresponding controllers (this time in parallel, using the same time stamp for the trajectory points). This approach assumes that controllers respect the time stamps specified for the waypoints.
+    trajectory_execution_manager::TrajectoryExecutionManager::execute() passes the appropriate trajectories to different controllers, monitors execution, optionally waits for completion of the execution and, very importantly, switches active controllers as needed (optionally) to be able to execute the specified trajectories.
+
+The functionality of the trajectory execution in MoveIt! usually needs robot-specific interaction with controllers. For this reason, the concept of a controller manager specific to MoveIt! (moveit_controller_manager::MoveItControllerManager) was defined. This is an abstract class that defines the functionality needed by trajectory_execution_manager::TrajectoryExecutionManager and needs to be implemented for each robot type. Often, the implementation of these plugins are quite similar and it is easy to modify existing code to achieve the desired functionality (see for example pr2_moveit_controller_manager::Pr2MoveItControllerManager).
 
 ## Procedure
 1. We create a new package with
@@ -100,3 +113,13 @@ This ckass is a wrapper for services of `moveit_msgs::GetPlanningScene` [defined
 
 4. `group = moveit_commander.MoveGroupCommander("manipulator")`.
 This line creates an instance of the class `moveit_commander.move_group.MoveGroupCommander`, which is a wrapper for `_moveit_move_group_interface.MoveGroupInterface` [defined here](https://github.com/ros-planning/moveit/blob/cf218879dbc23aadf88dd56b8abe7970b7d61030/moveit_ros/planning_interface/move_group_interface/include/moveit/move_group_interface/move_group_interface.h#L99) and [implemented here](https://github.com/ros-planning/moveit/blob/cf218879dbc23aadf88dd56b8abe7970b7d61030/moveit_ros/planning_interface/move_group_interface/src/move_group_interface.cpp#L1314).
+    - **Services**
+        - `moveit_msgs::QueryPlannerInterfaces` in
+        - `moveit_msgs::GetPlannerParams`
+        - `moveit_msgs::SetPlannerParams`
+        - `moveit_msgs::GetCartesianPath`
+        - `moveit_msgs::GraspPlanning`
+
+    - **Topics**
+        - published `moveit_msgs::AttachedCollisionObject`
+        - published `trajectory_execution_manager::TrajectoryExecutionManager::EXECUTION_EVENT_TOPIC`
