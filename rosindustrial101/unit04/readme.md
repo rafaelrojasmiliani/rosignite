@@ -378,16 +378,8 @@ The `move_group` node is implemented here `https://github.com/ros-planning/movei
 - **Subscribed Topics**
     - `/attached_collision_object [unknown type]`
     - `/collision_object [unknown type]`
-    - `/execute_trajectory/cancel [unknown type]`
-    - `/execute_trajectory/goal [unknown type]`
     - `/head_mount_kinect/depth_registered/points [unknown type]`
     - `/joint_states [sensor_msgs/JointState]`
-    - `/move_group/cancel [unknown type]`
-    - `/move_group/goal [unknown type]`
-    - `/pickup/cancel [unknown type]`
-    - `/pickup/goal [unknown type]`
-    - `/place/cancel [unknown type]`
-    - `/place/goal [unknown type]`
     - `/planning_scene [moveit_msgs/PlanningScene]`
     - `/planning_scene_world [moveit_msgs/PlanningSceneWorld]`
     - `/tf [tf2_msgs/TFMessage]`
@@ -395,11 +387,50 @@ The `move_group` node is implemented here `https://github.com/ros-planning/movei
     - `/trajectory_execution_event [unknown type]`
 
 
-- **Actions offered** (in the sense that `move_group` subscribe to `namespace/goal`)
-    - `moveit_msgs/ExecuteTrajectoryAction` in `/execute_trajectory/goal`
-    - `moveit_msgs/MoveGroupAction` in `/move_group/goal`
-    - `moveit_msgs/PickupAction` in `/pickup/goal`
-    - `moveit_msgs/PlaceAction` in `/place/goal`
+- **Actions offered** (in the sense that `move_group` subscribes to `namespace/goal`)
+    - `moveit_msgs/ExecuteTrajectoryAction` exposed in `/execute_trajectory/goal`
+    - `moveit_msgs/MoveGroupAction` exposed in `/move_group/goal`
+    - `moveit_msgs/PickupAction` exposed in `/pickup/goal`
+    - `moveit_msgs/PlaceAction` exposed in `/place/goal`
+
+
+The `main` function [is here](https://github.com/ros-planning/moveit/blob/f85db808303cb7787320dc48162eabdc07593fdc/moveit_ros/move_group/src/move_group.cpp#L182) is something like
+
+```C++
+int main(int argc, char **argv) {
+  ros::init(argc, argv, move_group::NODE_NAME);
+  ros::AsyncSpinner spinner(1);
+  spinner.start();
+  ros::NodeHandle nh;
+
+  tf_buffer = std::make_shared<tf2_ros::Buffer>(ros::Duration(10.0));
+  tfl = std::make_shared<tf2_ros::TransformListener>(*tf_buffer, nh);
+
+  planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor(
+      new planning_scene_monitor::PlanningSceneMonitor(ROBOT_DESCRIPTION,
+                                                       tf_buffer));
+
+  bool debug = read_from_args("--debug");
+
+  planning_scene_monitor->startSceneMonitor();
+  planning_scene_monitor->startWorldGeometryMonitor();
+  planning_scene_monitor->startStateMonitor();
+
+  move_group::MoveGroupExe mge(planning_scene_monitor, debug);
+
+  planning_scene_monitor->publishDebugInformation(debug);
+
+  mge.status();
+
+  ros::waitForShutdown();
+
+  return 0;
+}
+```
+
+## `PlanningSceneMonitor`
+
+`PlanningSceneMonitor` is [defined here](https://github.com/ros-planning/moveit/blob/47884198c2585215de8f365a7ff20479f8bb4b51/moveit_ros/planning/planning_scene_monitor/include/moveit/planning_scene_monitor/planning_scene_monitor.h#L61) and [implemented here](https://github.com/ros-planning/moveit/blob/47884198c2585215de8f365a7ff20479f8bb4b51/moveit_ros/planning/planning_scene_monitor/src/planning_scene_monitor.cpp).
 
 
 ## MoveIt configuration package launch files
