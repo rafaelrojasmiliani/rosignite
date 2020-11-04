@@ -1,5 +1,9 @@
 # Motion Planning with Python
 
+```mermaid
+graph TD;
+    A-->B;
+```
 
 This Unit will show you how to perform motion planning with Python.
 By completing this Unit, you will be able to create a Python program that performs motion planning on your robot
@@ -244,7 +248,13 @@ the `MoveItSimpleControllerManager` is [defined and implemented here](https://gi
 ```
 ### `FollowJointTrajectoryControllerHandle`
 
-The class `FollowJointTrajectoryControllerHandle` is [defined here](https://github.com/ros-planning/moveit/blob/master/moveit_plugins/moveit_simple_controller_manager/include/moveit_simple_controller_manager/follow_joint_trajectory_controller_handle.h) and [implemented here](https://github.com/ros-planning/moveit/blob/master/moveit_plugins/moveit_simple_controller_manager/src/follow_joint_trajectory_controller_handle.cpp)
+The class `FollowJointTrajectoryControllerHandle` is [defined here](https://github.com/ros-planning/moveit/blob/master/moveit_plugins/moveit_simple_controller_manager/include/moveit_simple_controller_manager/follow_joint_trajectory_controller_handle.h) and [implemented here](https://github.com/ros-planning/moveit/blob/master/moveit_plugins/moveit_simple_controller_manager/src/follow_joint_trajectory_controller_handle.cpp).
+This class inherits from `ActionBasedControllerHandle<control_msgs::FollowJointTrajectoryAction>`.
+This class wraps `ActionBasedControllerHandle<control_msgs::FollowJointTrajectoryAction>` and implements the `sendTrajectory` function.
+`ActionBasedControllerHandle` recieves the namespace of the `FollowJointTrajectoryAction` in its constructor which is called with the constructor
+```
+FollowJointTrajectoryControllerHandle(const std::string& name, const std::string& action_ns)
+```
 
 - **Function** `sendTrajectory`
     ```
@@ -266,6 +276,13 @@ The class `FollowJointTrajectoryControllerHandle` is [defined here](https://gith
 - **Actions**
     - [joint\_trajectory\_action](http://wiki.ros.org/joint_trajectory_action)
 
+
+### `ActionBasedControllerHandle`
+
+This is an abstract template class [defined here](https://github.com/ros-planning/moveit/blob/802e596a2283b64f4582d802c5f79e1f3d57def0/moveit_plugins/moveit_simple_controller_manager/include/moveit_simple_controller_manager/action_based_controller_handle.h).
+
+- **Variables**
+    - `std::shared_ptr<actionlib::SimpleActionClient<T> > controller_action_client_;`
 
 
 ## Procedure
