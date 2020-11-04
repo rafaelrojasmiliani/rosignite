@@ -65,14 +65,14 @@ This approach assumes that controllers respect the time stamps specified for the
 2. `trajectory_execution_manager::TrajectoryExecutionManager::execute()` passes the appropriate trajectories to different controllers, monitors execution, optionally waits for completion of the execution and, very importantly, switches active controllers as needed (optionally) to be able to execute the specified trajectories.
 This function has different overloaders, but its main definition [is here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L1208)
 
-```
+```C++
 void TrajectoryExecutionManager::execute(const ExecutionCompleteCallback& callback,
                                          const PathSegmentCompleteCallback& part_callback, bool auto_clear)
 ```
 
 This method starts a `boost::thread` [here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L1226) which executes `TrajectoryExecutionManager::executeThread` [implemented here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L1269) that is defined as
 
-```
+```C++
 void TrajectoryExecutionManager::executeThread(const ExecutionCompleteCallback& callback,
                                                const PathSegmentCompleteCallback& part_callback, bool auto_clear)
 ```
@@ -81,11 +81,11 @@ the arguments `callback` and `part_callback` can be defined by the user and thei
 The main functionality of `TrajectoryExecutionManager::executeThread` is to call `TrajectoryExecutionManager::executePart` [here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L1290).
 
 `TrajectoryExecutionManager::executePart` is [implemented here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp#L1321) as
-```
+```C++
 bool TrajectoryExecutionManager::executePart(std::size_t part_index)
 ```
 This function executes the trajectory encapsulated in the trajectory context `trajectories_[part_index]` in something like
-```
+```C++
 context =  trajectories_[part_index]
 for(std::size_t i = 0; i < context.controllers_.size(); ++i)
     handles[i] = controller_manager_->getControllerHandle(context.controllers_[i]); //context.controllers_[i] is a string
@@ -114,7 +114,7 @@ The method `TrajectoryExecutionManager::receiveEvent` does just one operation: i
 
 - **Functions**: `TrajectoryExecutionManager::initialize`
     1. calls `TrajectoryExecutionManager::loadControllerParams`
-    ```c++
+    ```C++
     XmlRpc::XmlRpcValue controller_list;
     node_handle_.getParam("controller_list", controller_list)
     for (const XmlRpc::XmlRpcValue& controller : controller_list)
@@ -127,7 +127,7 @@ The method `TrajectoryExecutionManager::receiveEvent` does just one operation: i
     ```
     2. Load the parameters
 
-    ```c++
+    ```C++
     void *myplug = new pluginlib::ClassLoader<moveit_controller_manager::MoveItControllerManager>("moveit_core", "moveit_controller_manager::MoveItControllerManager")
 
     controller_manager_loader_.reset(myplug);
@@ -151,7 +151,7 @@ The class `TrajectoryExecutionManager::ControllerInformation` is [defined here](
 - **Function**: `TrajectoryExecutionManager::receiveEvent` and `TrajectoryExecutionManager::processEvent` (callback for `trajectory_execution_event`)
     1. `TrajectoryExecutionManager::receiveEvent` calls `TrajectoryExecutionManager::processEvent`.
     2. Stops the trajectory
-```
+```C++
   if (event == "stop")
     stopExecution(true);
   else
@@ -182,7 +182,7 @@ There are two different **abstract classes** called `MoveItControllerManager`
 `moveit_ros_control_interface::MoveItControllerManager` inherits from `moveit_controller_manager::MoveItControllerManager`.
 
 `TrajectoryExecutionManager` uses an instance of `moveit_controller_manager::MoveItControllerManager` which is inizialized as
-```
+```C++
     controller_manager_ = controller_manager_loader_->createUniqueInstance(controller);
 ```
 where `controller` is a string available in the ROS paramenter `
