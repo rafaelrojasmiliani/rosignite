@@ -114,7 +114,7 @@ The method `TrajectoryExecutionManager::receiveEvent` does just one operation: i
 
 - **Functions**: `TrajectoryExecutionManager::initialize`
     1. calls `TrajectoryExecutionManager::loadControllerParams`
-    ```
+    ```c++
     XmlRpc::XmlRpcValue controller_list;
     node_handle_.getParam("controller_list", controller_list)
     for (const XmlRpc::XmlRpcValue& controller : controller_list)
@@ -127,7 +127,7 @@ The method `TrajectoryExecutionManager::receiveEvent` does just one operation: i
     ```
     2. Load the parameters
 
-```
+    ```c++
     void *myplug = new pluginlib::ClassLoader<moveit_controller_manager::MoveItControllerManager>("moveit_core", "moveit_controller_manager::MoveItControllerManager")
 
     controller_manager_loader_.reset(myplug);
@@ -137,7 +137,7 @@ The method `TrajectoryExecutionManager::receiveEvent` does just one operation: i
 
     if (!controller.empty())
         controller_manager_ = controller_manager_loader_->createUniqueInstance(controller);
-```
+    ```
     3. Calls `TrajectoryExecutionManager::reloadControllerInformation`.
 This function initializes the vector `std::map<std::string, ControllerInformation> known_controllers_;`.
 The class `TrajectoryExecutionManager::ControllerInformation` is [defined here](https://github.com/ros-planning/moveit/blob/7ad2bc7b86dad08061d98668ba34feba54bb05cc/moveit_ros/planning/trajectory_execution_manager/include/moveit/trajectory_execution_manager/trajectory_execution_manager.h#L246).
