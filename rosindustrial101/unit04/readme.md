@@ -450,8 +450,64 @@ In its construction, this runs a `ros::AsyncSpinner`.
 - **Subscribed topics**
     - `planning_scene` of type `moveit_msgs::PlanningScene` [defined here](http://docs.ros.org/en/api/moveit_msgs/html/msg/PlanningScene.html).
 On this message the function `PlanningSceneMonitor::newPlanningSceneMessage` is called.
-    - `collision_object` of type `moveit_msgs::CollisionObject` [defined here](http://docs.ros.org/en/jade/api/moveit_msgs/html/msg/CollisionObject.html).
-    - `planning_scene_world` of type `moveit_msgs::PlanningScene`.
+    - `collision_object` of type `moveit_msgs::CollisionObject` [defined here](http://docs.ros.org/en/jade/api/moveit_msgs/html/msg/CollisionObject.html) with callback `PlanningSceneMonitor::collisionObjectCallback`.
+    - `planning_scene_world` of type `moveit_msgs::PlanningScene` with callback `PlanningSceneMonitor::newPlanningSceneWorldCallback`
+    - `attached_collision_object` of type `moveit_msgs::AttachedCollisionObject` [defined here](http://docs.ros.org/en/jade/api/moveit_msgs/html/msg/AttachedCollisionObject.html) with callback `PlanningSceneMonitor::attachObjectCallback`
+    - `joint_states` subscribed by `CurrentStateMonitorPtr PlanningSceneMonitor::current_state_monitor_` with callback `planning_scene_monitor::CurrentStateMonitor::jointStateCallback` [implemented here](https://github.com/ros-planning/moveit/blob/382aa5a8cdd39eace07536d39c497a4b21f0f653/moveit_ros/planning/planning_scene_monitor/src/current_state_monitor.cpp#L336).
+
+- **Published topics**
+    - `monitored_planning_scene` of type `moveit_msgs::PlanningScene`
+
+- **Required services**
+    - **Optional?** `get_planning_scene` of type `moveit_msgs::GetPlanningScene` [defined here](http://docs.ros.org/en/api/moveit_msgs/html/srv/GetPlanningScene.html)
+
+- **Offered services**
+    - **Optional?** `get_planning_scene`with callback `PlanningSceneMonitor::getPlanningSceneServiceCallback` optional service for getting the complete planning scene.
+This is useful for satisfying the Rviz PlanningScene display's need for a service **without having to use a `move_group` node**.
+ _Be careful not to use this in conjunction with `PlanningSceneMonitor::requestPlanningSceneState`_, as it will create a pointless feedback loop
+- **Threads**
+    - `PlanningSceneMonitor::scenePublishingThread` [implemented here](https://github.com/ros-planning/moveit/blob/47884198c2585215de8f365a7ff20479f8bb4b51/moveit_ros/planning/planning_scene_monitor/src/planning_scene_monitor.cpp#L334)
+
+
+- **Members**
+    - `planning_scene::PlanningScenePtr scene_;` Argument of the constructor, by default `planning_scene::PlanningScenePtr()`
+    - `std::shared_ptr<tf2_ros::Buffer> tf_buffer_;` Argument of the constrcutor
+    - `ros::ServiceServer get_scene_service_;`
+    - ``
+    - `// include a octomap monitor`
+    - `std::unique_ptr<occupancy_map_monitor::OccupancyMapMonitor> octomap_monitor_;`
+    - ``
+    - `// include a current state monitor`
+    - `CurrentStateMonitorPtr current_state_monitor_;`
+    - ``
+    - `typedef std::map<const moveit::core::LinkModel*,`
+    - `                 std::vector<std::pair<occupancy_map_monitor::ShapeHandle, std::size_t> > >`
+    - `    LinkShapeHandles;`
+    - `using AttachedBodyShapeHandles = std::map<const moveit::core::AttachedBody*,`
+    - `                                          std::vector<std::pair<occupancy_map_monitor::ShapeHandle, std::size_t> > >;`
+    - `using CollisionBodyShapeHandles =`
+    - `    std::map<std::string, std::vector<std::pair<occupancy_map_monitor::ShapeHandle, const Eigen::Isometry3d*> > >;`
+    - ``
+    - `LinkShapeHandles link_shape_handles_;`
+    - `AttachedBodyShapeHandles attached_body_shape_handles_;`
+    - `CollisionBodyShapeHandles collision_body_shape_handles_;`
+    - `mutable boost::recursive_mutex shape_handles_lock_;`
+    - ``
+    - `/// lock access to update_callbacks_`
+    - `boost::recursive_mutex update_lock_;`
+    - `std::vector<boost::function<void(SceneUpdateType)> > update_callbacks_;  /// List of callbacks to trigger when updates`
+                                                                           /// are received
+
+## Planning Scene
+The PlanningScene class provides the main interface that you will use for collision checking and constraint checking. In this tutorial, we will explore the C++ interface to this class.
+
+This class maintains the representation of the environment as seen by a planning instance. The environment geometry, the robot geometry and state are maintained. 
+
+The PlanningScene class can be easily setup and configured using a RobotModel or a URDF and SRDF.
+This is, however, not the recommended way to instantiate a PlanningScene.
+The PlanningSceneMonitor is the recommended method to create and maintain the current planning scene using data from the robot’s joints and the sensors on the robot.
+In this tutorial, we will instantiate a PlanningScene class directly, but this method of instantiation is only intended for illustration.
+
 ## MoveIt configuration package launch files
 
 - `chomp_planning_pipeline.launch.xml`
