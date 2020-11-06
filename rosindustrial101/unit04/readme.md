@@ -112,7 +112,12 @@ Otherwise this is read from the ROS parameter `moveit_manage_controllers`.
 
 - **Parameters**
     - `moveit_manage_controllers`
-    - `moveit_controller_manager`
+    - `moveit_controller_manager`. `TrajectoryExecutionManager` stores the controller manager specified in `moveit_controller_manager` into an instance of  `moveit_controller_manager::MoveItControllerManager` in a way similar to
+    ```C++
+    std::string controller;
+    node_handle_.getParam("moveit_controller_manager", controller);
+    controller_manager_ = controller_manager_loader_->createUniqueInstance(controller);
+    ```
     - `controller_list`
     - `~/trajectory_execution/execution_duration_monitoring` (with dynamic reconfigure)
     - `~/trajectory_execution/allowed_execution_duration_scaling` (with dynamic reconfigure)
@@ -194,23 +199,17 @@ There are two different **abstract classes** called `MoveItControllerManager`
 - `moveit_ros_control_interface::MoveItControllerManager` from the `moveit_plugins` package [defined and implemented here in the same file](https://github.com/ros-planning/moveit_plugins/blob/cf0ddc86cf843688c8d172cf233a5d0e63e7f9de/moveit_ros_control_interface/src/controller_manager_plugin.cpp#L79).
 `moveit_ros_control_interface::MoveItControllerManager` inherits from `moveit_controller_manager::MoveItControllerManager`.
 
-`TrajectoryExecutionManager` uses an instance of `moveit_controller_manager::MoveItControllerManager` which is initialized as
-```C++
-    controller_manager_ = controller_manager_loader_->createUniqueInstance(controller);
-```
-where `controller` is a string available in the ROS parameter `
-moveit_controller_manager`.
 
 ### MoveIt Simple Controller manager
 
-the `MoveItSimpleControllerManager` is [defined and implemented here](https://github.com/ros-planning/moveit/blob/7ad2bc7b86dad08061d98668ba34feba54bb05cc/moveit_plugins/moveit_simple_controller_manager/src/moveit_simple_controller_manager.cpp)
+The `MoveItSimpleControllerManager` is [defined and implemented here](https://github.com/ros-planning/moveit/blob/7ad2bc7b86dad08061d98668ba34feba54bb05cc/moveit_plugins/moveit_simple_controller_manager/src/moveit_simple_controller_manager.cpp)
 
 - **Variables**
     - `std::map<std::string, ActionBasedControllerHandleBasePtr> controllers_;`
     - `std::map<std::string, moveit_controller_manager::MoveItControllerManager::ControllerState> controller_states_;`
 
 - **Function** Constructor
-```C++
+    ```C++
 
     XmlRpc::XmlRpcValue controller_list;
     node_handle_.getParam("controller_list", controller_list);
@@ -241,7 +240,7 @@ the `MoveItSimpleControllerManager` is [defined and implemented here](https://gi
 
         new_handle->configure(controller_list[i]);
       }
-```
+    ```
 ### `FollowJointTrajectoryControllerHandle`
 
 The class `FollowJointTrajectoryControllerHandle` is [defined here](https://github.com/ros-planning/moveit/blob/master/moveit_plugins/moveit_simple_controller_manager/include/moveit_simple_controller_manager/follow_joint_trajectory_controller_handle.h) and [implemented here](https://github.com/ros-planning/moveit/blob/master/moveit_plugins/moveit_simple_controller_manager/src/follow_joint_trajectory_controller_handle.cpp).
@@ -376,15 +375,15 @@ The `move_group` node is implemented here `https://github.com/ros-planning/movei
     - `/move_group/trajectory_execution/parameter_updates [dynamic_reconfigure/Config]`
 
 - **Subscribed Topics**
-    - `/attached_collision_object [unknown type]`
     - `/head_mount_kinect/depth_registered/points [unknown type]`
+    - `/trajectory_execution_event [unknown type]`
+    - `/tf [tf2_msgs/TFMessage]`
+    - `/tf_static [tf2_msgs/TFMessage]`
     - `/joint_states [sensor_msgs/JointState]`
+    - `/attached_collision_object [unknown type]`
     - `/collision_object [unknown type]`
     - `/planning_scene [moveit_msgs/PlanningScene]`
     - `/planning_scene_world [moveit_msgs/PlanningSceneWorld]`
-    - `/tf [tf2_msgs/TFMessage]`
-    - `/tf_static [tf2_msgs/TFMessage]`
-    - `/trajectory_execution_event [unknown type]`
 
 
 - **Actions offered** (in the sense that `move_group` subscribes to `namespace/goal`)
@@ -404,6 +403,7 @@ int main(int argc, char **argv) {
   ros::NodeHandle nh;
 
   tf_buffer = std::make_shared<tf2_ros::Buffer>(ros::Duration(10.0));
+  // subscrive to /tf and /tf_static, make that info available at tf_buffer
   tfl = std::make_shared<tf2_ros::TransformListener>(*tf_buffer, nh);
 
   planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor(
@@ -411,9 +411,13 @@ int main(int argc, char **argv) {
                                                        tf_buffer));
 
   bool debug = read_from_args("--debug");
-
+  // subscribe to planning_scene topic of type `moveit_msgs::PlanningScene`
   planning_scene_monitor->startSceneMonitor();
+  // subscribe to collision_object of type  `moveit_msgs::CollisionObject`
+  // subscribe to planning_scene_world of type `moveit_msgs::PlanningScene`
   planning_scene_monitor->startWorldGeometryMonitor();
+  // subscrive to joint_states with the member `PlanningSceneMonitor::current_state_monitor_` of type `planning_scene_monitor::CurrentStateMonitor`
+  // subscribe to `attached_collision_object` of type `moveit_msgs::AttachedCollisionObject`
   planning_scene_monitor->startStateMonitor();
 
   move_group::MoveGroupExe mge(planning_scene_monitor, debug);
@@ -448,66 +452,245 @@ In its construction, this runs a `ros::AsyncSpinner`.
 
 
 - **Subscribed topics**
-    - `planning_scene` of type `moveit_msgs::PlanningScene` [defined here](http://docs.ros.org/en/api/moveit_msgs/html/msg/PlanningScene.html).
+    - `planning_scene` of type `moveit_msgs::PlanningScene` [defined here](http://docs.ros.org/en/api/moveit_msgs/html/msg/PlanningScene.html). Thus subscriber is instantiated at `PlanningSceneMonitor::startSceneMonitor`.
 On this message the function `PlanningSceneMonitor::newPlanningSceneMessage` is called.
-    - `collision_object` of type `moveit_msgs::CollisionObject` [defined here](http://docs.ros.org/en/jade/api/moveit_msgs/html/msg/CollisionObject.html) with callback `PlanningSceneMonitor::collisionObjectCallback`.
-    - `planning_scene_world` of type `moveit_msgs::PlanningScene` with callback `PlanningSceneMonitor::newPlanningSceneWorldCallback`
+    - `collision_object` of type `moveit_msgs::CollisionObject` [defined here](http://docs.ros.org/en/jade/api/moveit_msgs/html/msg/CollisionObject.html) with callback `PlanningSceneMonitor::collisionObjectCallback`. This subscriber is instantiated at `PlanningSceneMonitor::startWorldGeometryMonitor`
+    - `planning_scene_world` of type `moveit_msgs::PlanningScene` with callback `PlanningSceneMonitor::newPlanningSceneWorldCallback`.  This subscriber is instantiated at `PlanningSceneMonitor::startWorldGeometryMonitor`
     - `attached_collision_object` of type `moveit_msgs::AttachedCollisionObject` [defined here](http://docs.ros.org/en/jade/api/moveit_msgs/html/msg/AttachedCollisionObject.html) with callback `PlanningSceneMonitor::attachObjectCallback`
-    - `joint_states` subscribed by `CurrentStateMonitorPtr PlanningSceneMonitor::current_state_monitor_` with callback `planning_scene_monitor::CurrentStateMonitor::jointStateCallback` [implemented here](https://github.com/ros-planning/moveit/blob/382aa5a8cdd39eace07536d39c497a4b21f0f653/moveit_ros/planning/planning_scene_monitor/src/current_state_monitor.cpp#L336).
+    - `joint_states` subscribed by `PlanningSceneMonitor::current_state_monitor_` of type `CurrentStateMonitorPtr` with callback `planning_scene_monitor::CurrentStateMonitor::jointStateCallback` [implemented here](https://github.com/ros-planning/moveit/blob/382aa5a8cdd39eace07536d39c497a4b21f0f653/moveit_ros/planning/planning_scene_monitor/src/current_state_monitor.cpp#L336).
 
 - **Published topics**
-    - `monitored_planning_scene` of type `moveit_msgs::PlanningScene`
+    - `monitored_planning_scene` of type `moveit_msgs::PlanningScene`.
 
 - **Required services**
-    - **Optional?** `get_planning_scene` of type `moveit_msgs::GetPlanningScene` [defined here](http://docs.ros.org/en/api/moveit_msgs/html/srv/GetPlanningScene.html)
+    - **Optional?** `get_planning_scene` of type `moveit_msgs::GetPlanningScene` [defined here](http://docs.ros.org/en/api/moveit_msgs/html/srv/GetPlanningScene.html).
+This service is called by `PlanningSceneMonitor::requestPlanningSceneState`
 
 - **Offered services**
     - **Optional?** `get_planning_scene`with callback `PlanningSceneMonitor::getPlanningSceneServiceCallback` optional service for getting the complete planning scene.
 This is useful for satisfying the Rviz PlanningScene display's need for a service **without having to use a `move_group` node**.
  _Be careful not to use this in conjunction with `PlanningSceneMonitor::requestPlanningSceneState`_, as it will create a pointless feedback loop
+This service is initiated by `PlanningSceneMonitor::providePlanningSceneService`
+
+    - `tf2_frames` through `PlanningSceneMonitor::tf_buffer_`
+
+    - ` `
 - **Threads**
     - `PlanningSceneMonitor::scenePublishingThread` [implemented here](https://github.com/ros-planning/moveit/blob/47884198c2585215de8f365a7ff20479f8bb4b51/moveit_ros/planning/planning_scene_monitor/src/planning_scene_monitor.cpp#L334)
 
 
 - **Members**
     - `planning_scene::PlanningScenePtr scene_;` Argument of the constructor, by default `planning_scene::PlanningScenePtr()`
-    - `std::shared_ptr<tf2_ros::Buffer> tf_buffer_;` Argument of the constrcutor
-    - `ros::ServiceServer get_scene_service_;`
-    - ``
-    - `// include a octomap monitor`
+    - `std::shared_ptr<tf2_ros::Buffer> tf_buffer_;` (this type is [defined here](https://github.com/ros/geometry2/blob/ad04943f23608ab757389ce57d04f110df1c692b/tf2_ros/include/tf2_ros/buffer.h#L51) and [implemented here](https://github.com/ros/geometry2/blob/ad04943f23608ab757389ce57d04f110df1c692b/tf2_ros/src/buffer.cpp)) Argument of the constructor, stores known frames.    tf2_ros::TransformListener
     - `std::unique_ptr<occupancy_map_monitor::OccupancyMapMonitor> octomap_monitor_;`
-    - ``
-    - `// include a current state monitor`
-    - `CurrentStateMonitorPtr current_state_monitor_;`
-    - ``
-    - `typedef std::map<const moveit::core::LinkModel*,`
-    - `                 std::vector<std::pair<occupancy_map_monitor::ShapeHandle, std::size_t> > >`
-    - `    LinkShapeHandles;`
-    - `using AttachedBodyShapeHandles = std::map<const moveit::core::AttachedBody*,`
-    - `                                          std::vector<std::pair<occupancy_map_monitor::ShapeHandle, std::size_t> > >;`
-    - `using CollisionBodyShapeHandles =`
-    - `    std::map<std::string, std::vector<std::pair<occupancy_map_monitor::ShapeHandle, const Eigen::Isometry3d*> > >;`
-    - ``
-    - `LinkShapeHandles link_shape_handles_;`
-    - `AttachedBodyShapeHandles attached_body_shape_handles_;`
-    - `CollisionBodyShapeHandles collision_body_shape_handles_;`
-    - `mutable boost::recursive_mutex shape_handles_lock_;`
-    - ``
-    - `/// lock access to update_callbacks_`
-    - `boost::recursive_mutex update_lock_;`
-    - `std::vector<boost::function<void(SceneUpdateType)> > update_callbacks_;  /// List of callbacks to trigger when updates`
-                                                                           /// are received
+    - `robot_model_loader::RobotModelLoaderPtr rm_loader_;`, loads the model
+    - `moveit::core::RobotModelConstPtr robot_model_;`
+    - `collision_detection::CollisionPluginLoader collision_loader_;`
+    - `DynamicReconfigureImpl* reconfigure_impl_;`
 
-## Planning Scene
-The PlanningScene class provides the main interface that you will use for collision checking and constraint checking. In this tutorial, we will explore the C++ interface to this class.
+## Planning Scene Manager
+
+The planning scene `planning_scene::PlanningScene` is the central class for motion planning in MoveIt.
+It is [defined here](https://github.com/ros-planning/moveit/blob/382aa5a8cdd39eace07536d39c497a4b21f0f653/moveit_core/planning_scene/include/moveit/planning_scene/planning_scene.h#L87) and [implemented here](https://github.com/ros-planning/moveit/blob/master/moveit_core/planning_scene/src/planning_scene.cpp).
+A planning scene represents all the information needed to compute motion plans: 
+    - The robot's current state
+    - its representation (geometric, kinematic, dynamic)
+    - the world representation.
+Using this information, things like forward kinematics, inverse kinematics, evaluation of constraints, collision checking, are all possible.
+
+The `planning_scene::PlanningScene` class is tightly connected to the `planning_scene_monitor::PlannningSceneMonitor` class, which maintains a planning scene using information from the ROS Parameter Server and subscription to topics.
+
+The `PlanningScene` class provides the main interface that you will use for collision checking and constraint checking. 
 
 This class maintains the representation of the environment as seen by a planning instance. The environment geometry, the robot geometry and state are maintained. 
 
-The PlanningScene class can be easily setup and configured using a RobotModel or a URDF and SRDF.
-This is, however, not the recommended way to instantiate a PlanningScene.
-The PlanningSceneMonitor is the recommended method to create and maintain the current planning scene using data from the robot’s joints and the sensors on the robot.
-In this tutorial, we will instantiate a PlanningScene class directly, but this method of instantiation is only intended for illustration.
+The `PlanningScene` class can be easily setup and configured using a RobotModel or a URDF and SRDF.
+This is, however, not the recommended way to instantiate a `PlanningScene`.
+The `PlanningSceneMonitor` is the recommended method to create and maintain the current planning scene using data from the robot’s joints and the sensors on the robot.
+In this tutorial, we will instantiate a `PlanningScene` class directly, but this method of instantiation is only intended for illustration.
 
+## Move Group Context
+
+The class `move_group::MoveGroupContext` is [defined here](https://github.com/ros-planning/moveit/blob/f85db808303cb7787320dc48162eabdc07593fdc/moveit_ros/move_group/include/moveit/move_group/move_group_context.h) and [implemented here](https://github.com/ros-planning/moveit/blob/f85db808303cb7787320dc48162eabdc07593fdc/moveit_ros/move_group/src/move_group_context.cpp).
+This class requires a `PlanningSceneMonitor` in its constructor.
+
+- **Functions**
+    - `MoveGroupContext`
+    ```C++
+    MoveGroupContext(const planning_scene_monitor::PlanningSceneMonitorPtr& planning_scene_monitor, bool allow_trajectory_execution = false, bool debug = false):
+     planning_scene_monitor_(planning_scene_monitor)
+      , allow_trajectory_execution_(allow_trajectory_execution)
+      , debug_(debug)
+    {
+      planning_pipeline_.reset(new planning_pipeline::PlanningPipeline(planning_scene_monitor_->getRobotModel()));
+
+      if (allow_trajectory_execution_)
+      {
+        trajectory_execution_manager_.reset(new trajectory_execution_manager::TrajectoryExecutionManager(
+            planning_scene_monitor_->getRobotModel(), planning_scene_monitor_->getStateMonitor()));
+        plan_execution_.reset(new plan_execution::PlanExecution(planning_scene_monitor_, trajectory_execution_manager_));
+        plan_with_sensing_.reset(new plan_execution::PlanWithSensing(trajectory_execution_manager_));
+        if (debug)
+          plan_with_sensing_->displayCostSources(true);
+      }
+      planning_pipeline_->displayComputedMotionPlans(true);
+      planning_pipeline_->checkSolutionPaths(true);
+
+      if (debug_)
+        planning_pipeline_->publishReceivedRequests(true);
+    }
+    ```
+    - `bool status() const;` returns if `MoveGroupContext::planner_interface` is null or not.
+
+- **Variables**
+    - `planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor_;` Input to the constructor.
+    - `trajectory_execution_manager::TrajectoryExecutionManagerPtr trajectory_execution_manager_;`
+    - `planning_pipeline::PlanningPipelinePtr planning_pipeline_;`
+    - `plan_execution::PlanExecutionPtr plan_execution_;`
+    - `plan_execution::PlanWithSensingPtr plan_with_sensing_;`
+    - `bool allow_trajectory_execution_;`
+    - `bool debug_;`
+
+## Planning Pipeline
+
+In MoveIt, the motion planners are setup to plan paths.
+The class `planning_pipeline::PlanningPipelie` is [defined here](https://github.com/ros-planning/moveit/blob/master/moveit_ros/planning/planning_pipeline/include/moveit/planning_pipeline/planning_pipeline.h) and [implemented here](https://github.com/ros-planning/moveit/blob/master/moveit_ros/planning/planning_pipeline/src/planning_pipeline.cpp).
+However, there are often times when we may want to pre-process the motion planning request or post-process the planned path (e.g. for time parameterization).
+In such cases, we use the planning pipeline which chains a motion planner with pre-processing and post-processing stages.
+The pre and post-processing stages, called planning request adapters, can be configured by name from the ROS parameter server.
+
+This class facilitates loading planning plugins and planning request adapted plugin.
+It also allows calling `planning_interface::PlanningContext::solve()` from a loaded planning plugin and the `planning_request_adapter::PlanningRequestAdapter` plugins, in the specified order.
+
+- **Requirements to instantiate a Planning pipeline**
+    - A robot model (`moveit::core::RobotModel`) for which this pipeline is initialized.
+    - (default `ros::NodeHandle("~")`) ROS node handle that should be used for reading parameters needed for configuration
+    - (default in ROS parameter `"planning_plugin"` which by default is `ompl_interface/OMPLPlanner`) The name of the ROS parameter under which the name of the planning plugin is specified
+    - (default in ROS parameter `"request_adapters"`) The name of the ROS parameter under which the names of the request adapter plugins are specified (plugin names separated by space; order matters) or array of plugin names. This is stored in `PlanningPipeline::adapter_plugin_names_`. By default the `"request_adapters"` ROS paramter has
+    ```
+    default_planner_request_adapters/AddTimeParameterization            default_planner_request_adapters/FixWorkspaceBounds            default_planner_request_adapters/FixStartStateBounds            default_planner_request_adapters/FixStartStateCollision            default_planner_request_adapters/FixStartStatePathConstraints
+    ```
+
+- **Published topics**
+    - `display_planned_path` of type `moveit_msgs::DisplayTrajectory`
+    - `motion_plan_request` of type `moveit_msgs::MotionPlanRequest`
+    - `display_contacts` `visualization_msgs::MarkerArray`
+
+- **Variables**
+    - `std::unique_ptr<pluginlib::ClassLoader<planning_interface::PlannerManager> > planner_plugin_loader_;` is used to instantiate `planner_instance_`
+    - `planning_interface::PlannerManagerPtr planner_instance_;` is used to get a `PlanningContext` and solve the planning problem
+    - `std::unique_ptr<pluginlib::ClassLoader<planning_request_adapter::PlanningRequestAdapter> > adapter_plugin_loader_;` is used to instantiate `adapter_chain_`
+    - `std::unique_ptr<planning_request_adapter::PlanningRequestAdapterChain> adapter_chain_;`
+    - `moveit::core::RobotModelConstPtr robot_model_;`
+    
+
+- **Constructor**
+    ```
+      // load parameters ...
+      // ...
+      planner_plugin_loader_.reset(new pluginlib::ClassLoader<planning_interface::PlannerManager>(
+            "moveit_core", "planning_interface::PlannerManager"));
+      planner_instance_ = planner_plugin_loader_->createUniqueInstance(planner_plugin_name_);
+      planner_instance_->initialize(robot_model_, nh_.getNamespace())
+
+      // load the planner request adapters
+      if (!adapter_plugin_names_.empty())
+      {
+        std::vector<planning_request_adapter::PlanningRequestAdapterConstPtr> ads;
+        adapter_plugin_loader_.reset(new pluginlib::ClassLoader<planning_request_adapter::PlanningRequestAdapter>(
+              "moveit_core", "planning_request_adapter::PlanningRequestAdapter"));
+
+        for (const std::string& adapter_plugin_name : adapter_plugin_names_)
+        {
+          planning_request_adapter::PlanningRequestAdapterPtr ad;
+          ad = adapter_plugin_loader_->createUniqueInstance(adapter_plugin_name);
+          ad->initialize(nh_);
+          ads.push_back(std::move(ad));
+        }
+        adapter_chain_.reset(new planning_request_adapter::PlanningRequestAdapterChain());
+        for (planning_request_adapter::PlanningRequestAdapterConstPtr& ad : ads)
+          adapter_chain_->addAdapter(ad);
+      }
+      displayComputedMotionPlans(true);
+      checkSolutionPaths(true);
+    ```
+
+- **Generate plan** 
+    ```C++
+    // input 
+    //   - const planning_scene::PlanningSceneConstPtr& planning_scene,
+    //   - const planning_interface::MotionPlanRequest& req,
+    // output
+    //   - planning_interface::MotionPlanResponse& res,
+    bool planning_pipeline::PlanningPipeline::generatePlan(const planning_scene::PlanningSceneConstPtr& planning_scene,
+                                                           const planning_interface::MotionPlanRequest& req,
+                                                           planning_interface::MotionPlanResponse& res,
+                                                           std::vector<std::size_t>& adapter_added_state_index) const
+    {
+      if (publish_received_requests_) received_request_publisher_.publish(req);
+
+      bool solved = false;
+       if (adapter_chain_)
+       {
+         solved = adapter_chain_->adaptAndPlan(planner_instance_, planning_scene, req, res, adapter_added_state_index);
+         if (!adapter_added_state_index.empty())
+         {
+           std::stringstream ss;
+           for (std::size_t added_index : adapter_added_state_index)
+             ss << added_index << " ";
+           ROS_INFO("Planning adapters have added states at index positions: [ %s]", ss.str().c_str());
+         }
+       }
+       else
+       {
+         planning_interface::PlanningContextPtr context =
+             planner_instance_->getPlanningContext(planning_scene, req, res.error_code_);
+         solved = context ? context->solve(res) : false;
+       }
+
+      bool valid = true;
+
+      if (solved && res.trajectory_)
+      {
+        std::size_t state_count = res.trajectory_->getWayPointCount();
+        ROS_DEBUG_STREAM("Motion planner reported a solution path with " << state_count << " states");
+        if (check_solution_paths_)
+        {
+          std::vector<std::size_t> index;
+          if (!planning_scene->isPathValid(*res.trajectory_, req.path_constraints, req.group_name, false, &index))
+          {
+            // check to see if there is any problem with the states that are found to be invalid
+            // they are considered ok if they were added by a planning request adapter
+          }
+          else
+            ROS_DEBUG("Planned path was found to be valid when rechecked");
+        }
+      }
+
+      if (display_computed_motion_plans_ && solved)
+      {
+      // display solution path to `display_planned_path`
+      }
+
+      if (!solved)
+      {
+        // This should alert the user if planning failed because of contradicting constraints.
+        // Could be checked more thoroughly, but it is probably not worth going to that length.
+      }
+
+      return solved && valid;
+    }
+    ```
+
+
+## Planning context and Planner manager
+A `PlanningContext` is an abstract class that encapsulates a planning scene and a motion planning request.
+It is [defined here](https://github.com/ros-planning/moveit/blob/382aa5a8cdd39eace07536d39c497a4b21f0f653/moveit_core/planning_interface/include/moveit/planning_interface/planning_interface.h#L80) and [implemened here](https://github.com/ros-planning/moveit/blob/master/moveit_core/planning_interface/src/planning_interface.cpp).
+
+The planner manager `PlannerManager` is [defined here](https://github.com/ros-planning/moveit/blob/ba4b60e079fd14a61c50ef34c156eee6d63e58f7/moveit_core/planning_interface/include/moveit/planning_interface/planning_interface.h#L150) and [implemented here](https://github.com/ros-planning/moveit/blob/master/moveit_core/planning_interface/src/planning_interface.cpp#L94)
+
+- **To constcut a PlanningContext instance**
+    - 
 ## MoveIt configuration package launch files
 
 - `chomp_planning_pipeline.launch.xml`
