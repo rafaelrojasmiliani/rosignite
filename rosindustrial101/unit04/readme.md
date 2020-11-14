@@ -687,57 +687,83 @@ It also allows calling `planning_interface::PlanningContext::solve()` from a loa
 A `PlanningContext` is an abstract class that encapsulates a planning scene and a motion planning request.
 It is [defined here](https://github.com/ros-planning/moveit/blob/382aa5a8cdd39eace07536d39c497a4b21f0f653/moveit_core/planning_interface/include/moveit/planning_interface/planning_interface.h#L80) and [implemened here](https://github.com/ros-planning/moveit/blob/master/moveit_core/planning_interface/src/planning_interface.cpp).
 
-The planner manager `PlannerManager` is [defined here](https://github.com/ros-planning/moveit/blob/ba4b60e079fd14a61c50ef34c156eee6d63e58f7/moveit_core/planning_interface/include/moveit/planning_interface/planning_interface.h#L150) and [implemented here](https://github.com/ros-planning/moveit/blob/master/moveit_core/planning_interface/src/planning_interface.cpp#L94)
+The planner manager `PlannerManager` is an abstract [defined here](https://github.com/ros-planning/moveit/blob/ba4b60e079fd14a61c50ef34c156eee6d63e58f7/moveit_core/planning_interface/include/moveit/planning_interface/planning_interface.h#L150) and [implemented here](https://github.com/ros-planning/moveit/blob/master/moveit_core/planning_interface/src/planning_interface.cpp#L94).
+The `PlannerManager` is the class that must be implemented as a plugin to solve the motion planning problem [here](https://github.com/ros-planning/moveit/blob/382aa5a8cdd39eace07536d39c497a4b21f0f653/moveit_ros/planning/planning_pipeline/src/planning_pipeline.cpp#L242) and [here](https://github.com/ros-planning/moveit/blob/ff50476c4070eb86d0a70aa39281d5805db13fa5/moveit_core/planning_request_adapter/src/planning_request_adapter.cpp#L54)
 
-- **To constcut a PlanningContext instance**
-    - 
-## MoveIt configuration package launch files
+1. Initialise the planner manager with a robot model and a namespace as [here](https://github.com/ros-planning/moveit/blob/382aa5a8cdd39eace07536d39c497a4b21f0f653/moveit_ros/planning/planning_pipeline/src/planning_pipeline.cpp#L116)
+```C++
+planner_instance_ = planner_plugin_loader_->createUniqueInstance(planner_plugin_name_);
+planner_instance_->initialize(robot_model_, nh_.getNamespace()
+```
+2. Generate a planning context from the planner manager using the planning scene and the planning request as [here](https://github.com/ros-planning/moveit/blob/382aa5a8cdd39eace07536d39c497a4b21f0f653/moveit_ros/planning/planning_pipeline/src/planning_pipeline.cpp#L242)
+```C++
+planning_interface::PlanningContextPtr context = planner_instance_->getPlanningContext(planning_scene, req, res.error_code_);
+```
+4. Solve the motion planning request as [here](https://github.com/ros-planning/moveit/blob/382aa5a8cdd39eace07536d39c497a4b21f0f653/moveit_ros/planning/planning_pipeline/src/planning_pipeline.cpp#L244)
+```C++
+solved = context ? context->solve(res) : false;
+```
 
-- `chomp_planning_pipeline.launch.xml`
-- `default_warehouse_db.launch`
-    - `warehouse.launch`
-- `demo_gazebo.launch`
-    - `gazebo.launch`
-    - `planning_context.launch`
-    - `move_group.launch`
-    - `moveit_rviz.launch`
-    - `default_warehouse_db.launch if=$(arg db)`
-- `demo.launch`
-    - `planning_context.launch`
-    - `move_group.launch`
-    - `moveit_rviz.launch if=$(arg use_rviz)`
-    - `default_warehouse_db.launch if=$(arg db)`
-- `fake_moveit_controller_manager.launch.xml`
-- `gazebo.launch`
-    - `$(find gazebo_ros)/launch/empty_world.launch`
-    - `ros_controllers.launch`
-- `joystick_control.launch`
-- `move_group.launch`
-    - `planning_context.launch`
-    - `planning_pipeline.launch.xml ns="move_group"` and `pipeline="ompl"`
-    - `trajectory_execution.launch.xml if="$(arg allow_trajectory_execution)" ns="move_group"`
-    - `sensor_manager.launch.xml if="$(ar allow_trajectory_execution)" ns="move_group"`
-- `moveit.rviz`
-- `moveit_rviz.launch`
-- `myrobot_moveit_controller_manager.launch.xml`
-- `myrobot_moveit_sensor_manager.launch.xml`
-- `myrobot_planning_execution.launch`
-    - `planning_context.launch`
-    - `move_group.launch`
-    - `moveit_rviz.launch`
-- `ompl_planning_pipeline.launch.xml`
-- `planning_context.launch`
-- `planning_pipeline.launch.xml`
-    - `$(arg pipeline)_planning_pipeline.launch.xml`
-- `ros_controllers.launch`
-- `run_benchmark_ompl.launch`
-    - `planning_context.launch`
-    - `warehouse.launch`
-- `sensor_manager.launch.xml`
-    - `$(arg moveit_sensor_manager)_moveit_sensor_manager.launch.xml` with `moveit_sensor_manager=myrobot`
-- `setup_assistant.launch`
-- `trajectory_execution.launch.xml`
-    - `$(arg moveit_controller_manager)_moveit_controller_manager.launch.xml` with `moveit_controller_manager=myrobot`
-- `warehouse.launch`
-    - `warehouse_settings.launch.xml`
-- `warehouse_settings.launch.xml`
+## Planning request adapters
+
+Planning Request Adapters is the MoveIt pipeline implementation to pre-processing and/or post-processing paths/trajectories. 
+Thanks to this multiple motion planning algorithms can be used in a pipeline to produce robust motion plans.
+Some examples of existing planning adapters in MoveIt include `AddTimeParameterization`, `FixWorkspaceBounds`, `FixStartBounds`, `FixStartStateCollision`, `FixStartStatePathConstraints`, `CHOMPOptimizerAdapter`, etc.
+
+The generic interface to adapting motion planning requests is the abstract class `PlanningRequestAdapter` [defined here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_core/planning_request_adapter/include/moveit/planning_request_adapter/planning_request_adapter.h#L49) and [implemented here](https://github.com/ros-planning/moveit/blob/ff50476c4070eb86d0a70aa39281d5805db13fa5/moveit_core/planning_request_adapter/src/planning_request_adapter.cpp).
+
+- `PlanningRequestAdapter` **pure virtual methods**
+
+    - `void initialize(const ros::NodeHandle& node_handle) = 0;` Initialize parameters using the passed NodeHandle if no initialization is needed, simply implement as empty
+    - `adaptAndPlan(const PlannerFn& planner, const planning_scene::PlanningSceneConstPtr& planning_scene, const planning_interface::MotionPlanRequest& req, planning_interface::MotionPlanResponse& res, std::vector<std::size_t>& added_path_index) const = 0;` Adapt the planning request if needed, call the planner function  planner and update the planning response if needed. If the response is changed, the index values of the states added without planning are added to `added_path_index`
+
+The `PlanningRequestAdapterChain`[defined here](https://github.com/ros-planning/moveit/blob/a29a30caaecbd130d85056d959d4eb1c30d4088f/moveit_core/planning_request_adapter/include/moveit/planning_request_adapter/planning_request_adapter.h) and [implemented here](https://github.com/ros-planning/moveit/blob/ff50476c4070eb86d0a70aa39281d5805db13fa5/moveit_core/planning_request_adapter/src/planning_request_adapter.cpp) is the custom interface to store several with `PlanningRequestAdapter::adaptAndPlan` method [implemented here](https://github.com/ros-planning/moveit/blob/ff50476c4070eb86d0a70aa39281d5805db13fa5/moveit_core/planning_request_adapter/src/planning_request_adapter.cpp#L129)
+
+- **How does `PlanningRequestAdapterChain::adaptAndPlan` works**
+1. if there are no adapters, run the planner directly
+```C++
+    planning_interface::PlanningContextPtr context = planner_manager->getPlanningContext(planning_scene, planning_request, planning_request_result.error_code_)
+```
+2. For each adapter runs
+```C++
+adapter->adaptAndPlan(planner_manager, planning_scene, planning_req, planning_request_result, added_path_index);
+```
+3. merge the index values from each adapter
+```
+  // 
+  for (std::vector<std::size_t>& added_states_by_each_adapter : added_path_index_each)
+    for (std::size_t& added_index : added_states_by_each_adapter)
+    {
+      for (std::size_t& index_in_path : added_path_index)
+        if (added_index <= index_in_path)
+          index_in_path++;
+      added_path_index.push_back(added_index);
+    }
+  std::sort(added_path_index.begin(), added_path_index.end());
+  return result;
+}
+
+```
+## Motion Request message and `MotionRequest` class
+The most flexible way to interact with motion planning at the ROS level is through the `GetMotionPlan` and `ComputePlanningBenchmark` services. 
+The ROS services for motion planning share most of the request part of the service: the MotionPlanRequest message.
+
+### The `MotionPlanRequest` Message
+The content of this message may look intimidating, but most of its fields are optional:
+
+    - `group_name [string]` (**required**) This is the name of the group to plan for. This member is required and must be a group name defined in the SRDF.
+    - `start_state [moveit_msgs/RobotState]` (**optional**) This is the state to assume the robot starts at. This member does not need to be specified. 
+    - `goal_constraints [moveit_msgs/Constraints]` (**required**) Instead of defining a goal state, goals are specified in a more generic fashion: in terms of constraints.
+    - `path_constraints [moveit_msgs/Constraints]` (**optional**) These are optional constraints that are to be imposed along the solution path. All the states along the solution path must satisfy these constraints. 
+    - `planner_id [string]` (**optional**)  is specified, the library will use the planning algorithm identified by the specified.
+    - `workspace_parameters [moveit_msgs/WorkspaceParameters]` (**required**) define a bounding box in R^3.
+    - `num_planning_attempts [int32]` (**required**) for algorithms that use randomization in their execution, it is likely that different planner executions will produce different solutions. Setting this parameter to a value above 1 has the effect of running that many additional motion plans (perhaps in parallel), and obtaining multiple solutions. The shortest solution is then reported by the planner as the final result.
+    - `allowed_planning_time` (**required**) Each planner execution needs a time limit; this parameter defaults to 1 if not specified, and indicates the number of seconds allowed to plan.
+
+### The GetMotionPlan service MotionPlanResponse
+
+    - `trajectory [moveit_msgs/RobotTrajectory]` This is an array of `trajectory_msgs/JointTrajectoryPoint` which is a struct with four arrays `float64[]` for position, velocity, acceleration and effort. These are the points along the solution path. Only joints for the group planned for are included.
+    - `trajectory_start [moveit_msgs/RobotState]` __The computed trajectory does not include all robot joints; as such, the trajectory is not complete, since we do not know the values for the links that were not included in planning. For this reason, the full robot state is included__. This state is usually the robot's current state (as in the planning scene set for planning), but with values specified by the `MotionPlanRequest.start_state` overwritten.
+    - `planning_time` This is the amount of time the planner took to compute the motion plan
+    - `error_code` The status code reported after planning.
+
