@@ -1,0 +1,6 @@
+cmvision:
+  debug_on: True
+  color_cal_on: false
+  mean_shift_on: false
+  spatial_radius_pix: 2.0
+  color_radius_pix: 40.0
