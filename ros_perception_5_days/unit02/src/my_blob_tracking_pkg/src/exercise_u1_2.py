@@ -20,7 +20,7 @@ class SimpleTracker:
     def spin(self):
         twist = Twist()
         desired = (180+220)*0.5
-        gain = 0.01
+        gain = 0.001
 
         while not rospy.is_shutdown():
             # turn if we hit the line
@@ -31,7 +31,7 @@ class SimpleTracker:
             twist.angular.y = 0
             twist.angular.z = gain*(desired - self.xpos_)
             self.control_pub_.publish(twist)
-            rospy.sleep(0.1)
+            rospy.sleep(0.005)
 
 
 def main():
