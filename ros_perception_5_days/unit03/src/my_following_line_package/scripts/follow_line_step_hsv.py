@@ -48,7 +48,7 @@ class LineFollower(object):
         mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
 
         # Calculate centroid of the blob of binary image using ImageMoments
-        moments_dict = cv2.moments_dict(mask, False)
+        moments_dict = cv2.moments(mask, False)
         if abs(moments_dict['m00']) > 0.0:
             cx, cy = moments_dict['m10'] / \
                 moments_dict['m00'], moments_dict['m01']/moments_dict['m00']
