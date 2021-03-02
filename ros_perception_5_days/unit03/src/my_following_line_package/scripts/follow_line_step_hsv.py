@@ -5,17 +5,17 @@ import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Image
-from move_robot import MoveKobuki
+from move_robot import MoveRobot
 
 
 class LineFollower(object):
 
     def __init__(self):
 
+        self.cmd_vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
         self.bridge_object = CvBridge()
         self.sub_img_ = rospy.Subscriber(
             "/camera/rgb/image_raw", Image, self.camera_callback)
-        self.movekobuki_object = MoveKobuki()
         self.ctrl_c = False
         rospy.on_shutdown(self.shutdownhook)
 
@@ -74,7 +74,7 @@ class LineFollower(object):
         twist_object.angular.z = -error_x / 100
         rospy.loginfo("ANGULAR VALUE SENT===>"+str(twist_object.angular.z))
         # Make it start turning
-        self.movekobuki_object.move_robot(twist_object)
+        self.cmd_vel_pub.publish(twist_object)
 
     def clean_up(self):
         self.movekobuki_object.clean_class()
