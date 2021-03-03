@@ -6,7 +6,9 @@
     - Get the centroid of the blob
 
 3. Compute a simplified visual servoing system in velocity able to make a turtlebot follow a colored line on the ground.
-It uses the angular positioning proportional control to center the centroid of the line.
+The control of the robot is done at the rotation of the robot along th vertical axis.
+The dersired orientation of the robot is computed with the centroid of a blob in the image.
+We build an angular positioning proportional control to center the centroid of the line, which is transformed into a blob.
 The forward control velocity is constant.
 
 4. Finally it has a small example of how to use [ROs PD control](http://wiki.ros.org/pid)
